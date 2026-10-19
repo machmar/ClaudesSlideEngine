@@ -70,7 +70,7 @@ timeline stands still, so everything looks frozen and screenshots lie.
 
 ## Changing the engine
 
-`engine.js` is one IIFE, no dependencies, Chrome/Edge only. In order:
+`engine.js` is one IIFE, no dependencies, standard web APIs only (current Firefox, Chrome, Edge; Safari untested). In order:
 
 1. **Config** from `<body data-*>`; the accent colour becomes CSS variables `--se-accent*` used by `engine.css`.
 2. **Stage build:** every `body > section` (or `body > main > section`) moves into `#se-stage` (1920 × 1080, scaled

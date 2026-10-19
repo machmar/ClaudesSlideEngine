@@ -2,7 +2,7 @@
 
 **Live demos:** [showcase](https://machmar.github.io/ClaudesSlideEngine/demo/showcase/deck.html) (what it can do and
 how to control it) · [PixelPine](https://machmar.github.io/ClaudesSlideEngine/demo/PixelPine-demo/deck.html) (a real
-11-slide talk, in Czech). Open in Chrome or Edge, press → or scroll the mouse wheel.
+11-slide talk, in Czech). Open in Firefox, Chrome or Edge, press → or scroll the mouse wheel.
 
 > **This is meant for Claude, not really for people.** It is the toolkit Claude (Anthropic's AI assistant, here
 > working as Claude Code) uses to build presentations: you give Claude your material and the talk length, and it
@@ -160,11 +160,11 @@ python build.py path/to/deck.html -o talk.html
 ```
 
 Inlines `engine.css`, `engine.js` and any other local stylesheet or script, and embeds every local image, video and
-font as a data URI, so `talk.html` can be copied to a USB stick and opened anywhere (Chrome or Edge). Google Fonts
+font as a data URI, so `talk.html` can be copied to a USB stick and opened anywhere (Firefox, Chrome, Edge). Google Fonts
 links stay links: without internet the text falls back to the next font in your stack. `--link-media` keeps media as
 relative paths instead (small file, but the media must travel with it). Rebuild after every change to the deck.
 
-Works in current Chrome and Edge. It needs a reasonably modern GPU for the 3D, blur and mask effects; on a weak
+Works in current Firefox (what the author presents with), Chrome and Edge; Safari is untested. It needs a reasonably modern GPU for the 3D, blur and mask effects; on a weak
 laptop press M.
 
 ## License
