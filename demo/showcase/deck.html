@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude's Slide Engine: showcase</title>
+<!-- Showcase of the engine. Single-file build: python ../../build.py deck.html -o showcase.html -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&family=Nunito+Sans:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="../../engine.css">
+<script src="../../engine.js" defer></script>
+<style>
+  /* deck-wide look: plain CSS, nothing engine-specific */
+  section { font-family: 'Nunito Sans', Arial, sans-serif; padding: 128px; gap: 48px; background: #f5f0e6; color: #16271f; }
+  section.dark { background: #13221b; color: #f5f0e6; }
+  section.accent { background: #ffc47d; }
+  h1, h2 { font-family: Fredoka, Arial, sans-serif; font-weight: 600; }
+  h1 { font-size: 128px; line-height: 1.05; }
+  h2 { font-size: 64px; line-height: 1.15; }
+  p, li { font-size: 40px; line-height: 1.4; }
+  .label { font-size: 32px; line-height: 1.35; color: #3f5047; }
+  .kicker { font-size: 32px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #ffc47d; }
+  .big { font-family: Fredoka, Arial, sans-serif; font-size: 64px; font-weight: 600; color: #2e6b4e; }
+  .card { flex: 1; display: flex; flex-direction: column; gap: 12px; background: #fffcf6; border: 2px solid #e2d9c6; border-radius: 24px; padding: 40px 48px; }
+  .row { display: flex; gap: 32px; }
+  pre { font: 28px/1.45 Consolas, 'Courier New', monospace; background: #13221b; color: #e9e2d3; padding: 32px 40px; border-radius: 20px; margin: 0; }
+  pre b { color: #ffc47d; font-weight: 400; }
+  .tile { flex: 1; height: 360px; border-radius: 24px; display: flex; align-items: flex-end; padding: 28px; box-sizing: border-box;
+    font: 600 40px Fredoka, Arial, sans-serif; color: #fff; }
+  .chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .chip { background: #fffcf6; border: 2px solid #e2d9c6; border-radius: 16px; padding: 20px 28px; font: 600 32px Fredoka, Arial, sans-serif; color: #2e6b4e; }
+  table { font-size: 32px; }
+  th { color: #2e6b4e; }
+  kbd { font: 700 30px Consolas, monospace; background: #fffcf6; border: 2px solid #c9bea8; border-bottom-width: 5px; border-radius: 10px; padding: 2px 12px; }
+</style>
+</head>
+<body data-accent="#ffc47d" data-lang="en">
+
+<section class="dark" data-ambient="leds" style="justify-content:center">
+  <p class="kicker">Claude's Slide Engine</p>
+  <h1>Animated slides<br>from plain HTML</h1>
+  <p style="color:#e4ddcf">Press → to start. Scroll the mouse wheel for an overview, H for all controls.</p>
+  <aside>These are speaker notes. Every slide can have them: put the text in an aside element and press N while presenting. This deck shows what the engine does; each slide says which transition brought it in.</aside>
+</section>
+
+<section data-enter="led-radial" data-focus="960,540" style="flex-direction:row;align-items:center;gap:80px">
+  <div style="display:flex;flex-direction:column;gap:40px;flex:1">
+    <h2>A deck is a list of sections</h2>
+    <ul>
+      <li>Normal HTML and CSS, one section per slide</li>
+      <li>Two files to link, no install</li>
+      <li>Everything else is automatic</li>
+    </ul>
+    <p class="label">Came in with led-radial</p>
+  </div>
+  <pre>&lt;section <b>data-enter="cube-y"</b>&gt;
+  &lt;h2&gt;Second slide&lt;/h2&gt;
+  &lt;p&gt;240 LED&lt;/p&gt;
+  &lt;img src="photo.png"&gt;
+  &lt;aside&gt;Notes&lt;/aside&gt;
+&lt;/section&gt;</pre>
+  <aside>The source of a deck is just sections. The engine moves them onto a 1920 by 1080 stage, scales it to the screen and adds the animations.</aside>
+</section>
+
+<section data-enter="cube-y">
+  <h2>Numbers count up by themselves</h2>
+  <div class="row">
+    <div class="card"><p class="big">240 LED</p><p class="label">Big numbers count from zero</p></div>
+    <div class="card"><p class="big">12,90 €</p><p class="label">Decimal commas and spaces work</p></div>
+    <div class="card"><p class="big">480 → 141</p><p class="label">An arrow counts up, then down</p></div>
+  </div>
+  <p class="label">Headings build letter by letter, boxes flip in like cards. Came in with cube-y.</p>
+  <aside>Nothing on this slide has an animation attribute. Headings, paragraphs, cards and numbers are recognised automatically.</aside>
+</section>
+
+<section data-enter="iris" style="flex-direction:row;align-items:center;gap:80px">
+  <svg data-fx="spin3d" width="560" height="600" viewBox="0 0 560 600" aria-label="A tree"><polygon points="280,40 520,540 40,540" fill="#2e6b4e"/><rect x="250" y="540" width="60" height="50" fill="#7a5a3a"/><circle cx="280" cy="40" r="30" fill="#ffc47d"/><circle cx="220" cy="300" r="18" fill="#ffc47d"/><circle cx="340" cy="400" r="18" fill="#ffc47d"/><circle cx="260" cy="460" r="18" fill="#ffc47d"/></svg>
+  <div style="display:flex;flex-direction:column;gap:32px;flex:1">
+    <h2>Pick an effect per element</h2>
+    <p>This tree uses <b>data-fx="spin3d"</b>.</p>
+    <p class="label">The iris opened from the first picture on the slide.</p>
+  </div>
+  <aside>The automatic choice can be overridden on any element with data-fx. The iris transition starts at the slide's first picture, or at data-focus.</aside>
+</section>
+
+<section data-enter="blinds">
+  <h2>Tables slide in row by row</h2>
+  <table style="font-size:40px;padding:16px 24px">
+    <tr><th>Batch</th><th style="text-align:right">100 pcs</th><th style="text-align:right">1 000 pcs</th><th style="text-align:right">10 000 pcs</th></tr>
+    <tr><td>Parts and assembly</td><td style="text-align:right">3,83 €</td><td style="text-align:right">3,20 €</td><td style="text-align:right">1,98 €</td></tr>
+    <tr><td>Certification share</td><td style="text-align:right">27,00 €</td><td style="text-align:right">2,70 €</td><td style="text-align:right">0,27 €</td></tr>
+  </table>
+  <p class="label">Right-aligned number cells count up. Came in with blinds.</p>
+  <aside>Rows come in one at a time and every right-aligned number counts up.</aside>
+</section>
+
+<section data-enter="dissolve">
+  <h2>Effects for pictures and boxes</h2>
+  <div class="row">
+    <div class="tile" data-fx="power" style="background:linear-gradient(135deg,#2e6b4e,#13221b)">power</div>
+    <div class="tile" data-fx="scan" style="background:linear-gradient(135deg,#3b6f9e,#16271f)">scan</div>
+    <div class="tile" data-fx="radial" style="background:linear-gradient(135deg,#c2603d,#5a2a1a)">radial</div>
+    <div class="tile" data-fx="spin3d" style="background:linear-gradient(135deg,#ffc47d,#c98a3a);color:#16271f">spin3d</div>
+  </div>
+  <p class="label">Also: pop, flip, rise, letters, rows, list, tilt, fade, count. Came in with dissolve.</p>
+  <aside>power switches on like an old screen and suits videos, scan suits schematics and screenshots, radial spreads from the top, spin3d suits product renders.</aside>
+</section>
+
+<section data-enter="led-rain" style="flex-direction:row;align-items:center;gap:80px">
+  <img src="../PixelPine-demo/media/aurora.png" data-video="../PixelPine-demo/videa/02-funkce-polarni-zare.mp4" data-fx="power" alt="Clip of the PixelPine aurora animation" style="width:520px;height:650px;border-radius:24px">
+  <div style="display:flex;flex-direction:column;gap:32px;flex:1">
+    <h2>Video clips</h2>
+    <p>An image with <b>data-video</b> becomes a muted loop that plays only while its slide is shown.</p>
+    <p class="label">Came in with led-rain.</p>
+  </div>
+  <aside>The picture is the poster frame, so the slide looks right even before the clip loads.</aside>
+</section>
+
+<section data-enter="zoom">
+  <h2>Every slide picks its entrance</h2>
+  <div class="chips">
+    <div class="chip">led-radial</div><div class="chip">led-rain</div><div class="chip">led-spiral</div><div class="chip">led-diagonal</div>
+    <div class="chip">cube-y</div><div class="chip">cube-x</div><div class="chip">iris</div><div class="chip">blinds</div>
+    <div class="chip">dissolve</div><div class="chip">zoom</div><div class="chip">vortex</div><div class="chip">fade</div>
+  </div>
+  <p class="label">data-enter="name" on the section. Going back plays it in reverse. Came in with zoom.</p>
+  <aside>Slides without data-enter take the next transition from a cycle. Going back plays the leaving slide's transition in reverse.</aside>
+</section>
+
+<section class="accent" data-enter="vortex">
+  <h2>Controls</h2>
+  <table style="font-size:32px;padding:12px 20px">
+    <tr><th style="width:42%">Key or button</th><th>Does</th></tr>
+    <tr><td><kbd>→</kbd> <kbd>Space</kbd> <kbd>PgDn</kbd>, click, mouse forward</td><td>next slide</td></tr>
+    <tr><td><kbd>←</kbd> <kbd>PgUp</kbd>, click left edge, mouse back</td><td>previous slide</td></tr>
+    <tr><td>scroll wheel, <kbd>G</kbd></td><td>overview: scroll to pick, → opens, ← returns</td></tr>
+    <tr><td><kbd>F</kbd> · <kbd>N</kbd> · <kbd>T</kbd></td><td>full screen · speaker notes · timer</td></tr>
+    <tr><td><kbd>M</kbd> · <kbd>H</kbd></td><td>simple transitions · all controls</td></tr>
+  </table>
+  <aside>Clickers that send PageUp and PageDown work. The mouse side buttons work whether the driver sends them as buttons, keys or browser history. Came in with vortex.</aside>
+</section>
+
+<section data-enter="cube-x">
+  <h2>Try it now</h2>
+  <div class="row">
+    <div class="card"><p class="big">Scroll</p><p class="label">The slide shrinks into a grid. Keep scrolling, then press →.</p></div>
+    <div class="card"><p class="big">N</p><p class="label">Shows the speaker notes of this slide.</p></div>
+    <div class="card"><p class="big">T</p><p class="label">The timer in the bottom right started with your first →.</p></div>
+  </div>
+  <p class="label">Came in with cube-x.</p>
+  <aside>You found the notes. The timer counts from the first slide change, so the deck can be opened before the talk. Shift+T resets it.</aside>
+</section>
+
+<section data-enter="led-diagonal">
+  <h2>Made for Claude to write</h2>
+  <ul>
+    <li>You give Claude the material and the talk length</li>
+    <li>Claude writes the slides and notes, following CLAUDE.md</li>
+    <li>build.py packs everything into one HTML file</li>
+  </ul>
+  <p class="label">Came in with led-diagonal.</p>
+  <aside>The repository's CLAUDE.md tells Claude how to plan, write, check and build a deck, so you only review the result.</aside>
+</section>
+
+<section class="dark" data-enter="led-spiral" data-ambient="leds" style="justify-content:center">
+  <h1>One file, any PC</h1>
+  <p style="color:#e4ddcf">python build.py deck.html -o talk.html</p>
+  <p class="label" style="color:#cfc7b6">Came in with led-spiral. Scroll for the overview of all slides.</p>
+  <aside>The built file has the engine, the pictures and the clips inside, so it can go on a USB stick and open in Chrome or Edge.</aside>
+</section>
+
+</body>
+</html>

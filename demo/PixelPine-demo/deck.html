@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PixelPine</title>
+<!-- Source of the animated presentation. Build the single-file version with:
+     python ../../build.py deck.html -o PixelPine.html -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&family=Nunito+Sans:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="../../engine.css">
+<script src="../../engine.js" defer></script>
+<style>
+  .se-slide { font-family: 'Nunito Sans', Arial, sans-serif; }
+  .se-slide :where(th, td) { border-bottom-color: rgba(22, 39, 31, .14); }
+</style>
+</head>
+<body data-accent="#ffc47d" data-led-bg="#0b130f" data-lang="cs">
+
+<section id="cover" data-ambient="leds" style="display:flex; flex-direction:row; gap:96px; align-items:center; padding:128px; background:#13221b">
+  <div style="display:flex; flex-direction:column; gap:32px; flex:1">
+    <p style="font-family:'Nunito Sans', Arial, sans-serif; font-size:32px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:#ffc47d">KTE · Projekt 1</p>
+    <h1 style="font-family:Fredoka, Arial, sans-serif; font-size:128px; font-weight:600; line-height:1.05; color:#f5f0e6">PixelPine</h1>
+    <p style="font-family:'Nunito Sans', Arial, sans-serif; font-size:40px; line-height:1.4; color:#e4ddcf">Vánoční stromeček z plošného spoje: 240 LED, dotykové ovládání, napájení z USB-C.</p>
+    <p style="font-family:'Nunito Sans', Arial, sans-serif; font-size:32px; color:#b9c6bd">Bc. Marek Mach · říjen 2026</p>
+  </div>
+  <img data-fx="power" src="media/garland.png" alt="Světelný efekt Spirálová girlanda" data-video="videa/01-titulni-spiralova-girlanda.mp4" style="width:640px; height:800px; border-radius:32px">
+  <aside>PixelPine je dekorativní vánoční stromeček vyrobený z plošného spoje. Rozměry 50 × 70 mm, 240 teple bílých LED, napájení z USB-C, deska stojí na stojánku, který je rovněž z plošného spoje. Video ukazuje jeden z 15 světelných efektů. Všechna videa v prezentaci pocházejí ze simulátoru, který používá skutečné pozice LED z návrhu desky. Obsah: funkce, deska a schéma, kusovník, napájení, náklady na výrobu a prodejní ceny.</aside>
+</section>
+
+<section id="product" data-enter="led-radial" data-focus="1472,230" style="background:#F5F0E6;color:#16271F;font-family:'Nunito Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-family:'Fredoka', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.15">Funkce</h2>
+<div style="display:flex;flex-direction:row;gap:40px;align-items:start">
+<div style="display:flex;flex-direction:column;gap:16px">
+<img data-fx="tilt" src="media/aurora.png" data-video="videa/02-funkce-polarni-zare.mp4" alt="Efekt Polární záře" style="width:380px;height:475px;object-fit:cover;border-radius:24px">
+<p style="font-size:32px;font-weight:700;text-align:center">Efekt: polární záře</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px">
+<img data-fx="tilt" src="media/heartbeat.png" data-video="videa/02-funkce-tlukot-srdce.mp4" alt="Efekt Tlukot srdce" style="width:380px;height:475px;object-fit:cover;border-radius:24px">
+<p style="font-size:32px;font-weight:700;text-align:center">Efekt: tlukot srdce</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px">
+<img data-fx="tilt" src="media/excited.png" data-video="videa/02-funkce-animovany-vyraz.mp4" alt="Animovaný výraz" style="width:380px;height:475px;object-fit:cover;border-radius:24px">
+<p style="font-size:32px;font-weight:700;text-align:center">Animovaný výraz</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:32px;padding:16px 0 0 16px">
+<p style="font-size:40px;line-height:1.3"><b>15</b> světelných efektů</p>
+<p style="font-size:40px;line-height:1.3"><b>16</b> výrazů</p>
+<p style="font-size:40px;line-height:1.3">Kapacitní dotyk: 6 gest</p>
+</div>
+</div>
+<aside>Zařízení přehrává 15 světelných efektů a 16 animovaných výrazů. Řídicí logika je mezi nimi přepíná podle vnitřního stavu a podle interakce uživatele.
+
+Ovládání je kapacitní: hvězda na špičce je elektroda na obou stranách desky, propojená prokovem. Firmware rozlišuje šest gest: přiblížení, dotyk, delší dotyk, silnější stisk, stisk z obou stran a rychlé opakované dotyky. Senzor nepotřebuje žádnou součástku navíc. LED zároveň slouží jako snímač okolního světla.</aside>
+</section>
+
+<section id="personality" data-enter="cube-y" style="background:#F5F0E6;color:#16271F;font-family:'Nunito Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-family:'Fredoka', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.15">Povaha: emoce a stavový automat</h2>
+<div style="display:flex;flex-direction:row;gap:40px;align-items:start">
+<div style="display:flex;flex-direction:column;gap:16px">
+<img data-fx="tilt" src="media/sleepy.png" data-video="videa/03-povaha-spanek.mp4" alt="Stav spánek" style="width:380px;height:475px;object-fit:cover;border-radius:24px">
+<p style="font-size:32px;font-weight:700;text-align:center">Stav: spánek</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px">
+<img data-fx="tilt" src="media/giggle.png" data-video="videa/03-povaha-lechtani.mp4" alt="Reakce na lechtání" style="width:380px;height:475px;object-fit:cover;border-radius:24px">
+<p style="font-size:32px;font-weight:700;text-align:center">Reakce: lechtání</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:32px;padding:16px 0 0 16px">
+<p style="font-size:40px;line-height:1.3"><b>6 emocí:</b> energie, soustředění, nálada, podráždění, nadšení, vztah</p>
+<p style="font-size:40px;line-height:1.3"><b>Stavy:</b> probuzení, práce, snění, dřímání, spánek, nevrlost</p>
+<p style="font-size:40px;line-height:1.3"><b>Vztah</b> k uživateli se ukládá do flash a zůstane i po vypnutí</p>
+</div>
+</div>
+<aside>Chování řídí šest vnitřních proměnných v rozsahu 0 až 1: energie, soustředění, nálada, podráždění, nadšení a vztah k uživateli. Mění se časem a podle dotyků: práce snižuje energii a soustředění, spánek energii doplňuje, hlazení zlepšuje náladu, příliš mnoho dotyků zvyšuje podráždění.
+
+Nad nimi běží stavový automat. Po zapnutí následuje probuzení, pak práce, kdy se přehrávají světelné efekty. Když klesne soustředění pod 25 %, přejde do snění, kdy ukazuje jen výrazy. Při energii pod 12 % dřímá a usne. Při vysokém podráždění se přepne do stavu nevrlost a ignoruje ťukání. Na gesta reaguje krátkými výrazy, třeba na lechtání vpravo.
+
+Proměnná vztah se ukládá do flash paměti, takže zůstane zachována i po odpojení napájení. Celá logika je součástí ověřovacího překladu firmwaru.</aside>
+</section>
+
+<section id="board" data-enter="iris" style="background:#F5F0E6;color:#16271F;font-family:'Nunito Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:row;align-items:center;gap:80px">
+<img data-fx="spin3d" src="media/pcb_top.png" alt="3D render přední strany desky PixelPine se stojánkem" style="width:723px;height:824px;object-fit:contain;border-radius:24px">
+<div style="flex:1;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-family:'Fredoka', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.15">Deska plošného spoje</h2>
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-family:'Fredoka', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;color:#2E6B4E">240 LED</p>
+<p style="font-size:40px;line-height:1.4;color:#3F5047">0603, teple bílé, rozteč 2,12 mm</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-family:'Fredoka', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;color:#2E6B4E">16 vývodů</p>
+<p style="font-size:40px;line-height:1.4;color:#3F5047">charlieplexing přímo z MCU, bez budiče</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-family:'Fredoka', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;color:#2E6B4E">50,5 × 70 mm</p>
+<p style="font-size:40px;line-height:1.4;color:#3F5047">FR-4 1,6 mm, 2 vrstvy, osazení z jedné strany</p>
+</div>
+</div>
+<aside>Deska má 240 LED velikosti 0603 v mřížce s roztečí 2,12 mm, natočených o 45°.
+
+LED řídí přímo mikrokontrolér Puya PY32F003 metodou charlieplexing: 16 vývodů dává 16 × 15 = 240 kombinací anoda–katoda, tedy přesně 240 LED. Žádný budič LED není potřeba.
+
+Deska je dvouvrstvá, FR-4 o tloušťce 1,6 mm, standardní technologie JLCPCB. Všech 263 součástek je na jedné straně, takže osazení proběhne v jednom průchodu.</aside>
+</section>
+
+<section id="schematic" data-enter="blinds" style="background:#F5F0E6;color:#16271F;font-family:'Nunito Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:32px">
+<h2 style="font-family:'Fredoka', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.15">Schéma: MCU a napájení</h2>
+<img data-fx="scan" src="media/sch_mcu_power.png" alt="Schéma zapojení: mikrokontrolér PY32F003 s 16 rezistory a napájení z USB-C" style="width:1664px;height:690px;object-fit:contain;border-radius:16px;border:2px solid #E2D9C6">
+<aside>Schéma má dva hlavní bloky.
+
+Vlevo mikrokontrolér PY32F003F18P6 v pouzdře TSSOP-20. Šestnáct vývodů jde přes rezistory 100 Ω na vodiče L0 až L15 matice LED; rezistory omezují proud společného pinu pod 20 mA. Vývod PA7 je analogový vstup dotykové hvězdy, chráněný rezistorem 1 kΩ proti ESD. Programovací piny SWD jsou zároveň dva z vodičů matice, programuje se přes plošky na zadní straně.
+
+Vpravo napájení: USB-C konektor jen pro napájení, dva rezistory 5,1 kΩ na CC pinech, aby nabíječka dodala 5 V, a kondenzátor 10 µF. Pojistka, ochrana a stabilizátor záměrně chybí, MCU pracuje přímo z 5 V.
+
+Samotná matice 240 LED je na dalším bloku schématu: 16 řádků po 15 diodách.</aside>
+</section>
+
+<section id="bom" data-enter="dissolve" style="background:#F5F0E6;color:#16271F;font-family:'Nunito Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:32px">
+<h2 style="font-family:'Fredoka', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.15">Kusovník (BOM)</h2>
+<table style="font-size:32px;color:#16271F;padding:10px 20px">
+<tr><th style="width:20%;text-align:left">Označení</th><th style="width:52%;text-align:left">Součástka</th><th style="width:10%;text-align:right">Ks</th><th style="width:18%;text-align:right">Cena / deska</th></tr>
+<tr><td>D1–D240</td><td>LED 0603 teple bílá, XL-1608WWC-06</td><td style="text-align:right">240</td><td style="text-align:right">1,36 $</td></tr>
+<tr><td>U1</td><td>MCU PY32F003F18P6, TSSOP-20</td><td style="text-align:right">1</td><td style="text-align:right">0,148 $</td></tr>
+<tr><td>J1</td><td>USB-C 6pin, jen napájení</td><td style="text-align:right">1</td><td style="text-align:right">0,023 $</td></tr>
+<tr><td>C1</td><td>10 µF 10 V X5R 0603</td><td style="text-align:right">1</td><td style="text-align:right">0,022 $</td></tr>
+<tr><td>R1–R16</td><td>100 Ω 0402, vodiče matice</td><td style="text-align:right">16</td><td style="text-align:right">0,013 $</td></tr>
+<tr><td>C2, R17–R19</td><td>100 nF, 2× 5,1 kΩ, 1 kΩ (0402)</td><td style="text-align:right">4</td><td style="text-align:right">0,008 $</td></tr>
+<tr style="background:#E3EFE7"><td><b>Celkem</b></td><td><b>8 položek, vše skladem LCSC</b></td><td style="text-align:right"><b>263</b></td><td style="text-align:right"><b>1,57 $</b></td></tr>
+</table>
+<p style="font-size:32px;color:#4A5A50">Ceny LCSC při sérii 1 000 ks. LED tvoří 86 % ceny součástek.</p>
+<aside>Kusovník má osm položek a 263 součástek, všechny jsou skladem u LCSC a JLCPCB je umí osadit.
+
+Ceny jsou za sérii tisíc kusů. Součástky na jednu desku vycházejí na 1,57 dolaru, z toho 1,36 dolaru jsou LED. Procesor stojí necelých 15 centů, zbytek jsou pasivní součástky za zlomky centu.
+
+Dotyková hvězda a programovací plošky jsou jen měď na desce, nic nestojí.</aside>
+</section>
+
+<section id="routing" data-enter="led-rain" style="background:#F5F0E6;color:#16271F;font-family:'Nunito Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:row;align-items:center;gap:64px">
+<img data-fx="radial" src="media/islands_crown.png" alt="Měděné ostrůvky LED plošek: barva značí jeden ze 16 vodičů matice, spojené plošky tvoří jeden ostrůvek" style="width:742px;height:824px;object-fit:contain">
+<div style="flex:1;display:flex;flex-direction:column;gap:32px">
+<h2 style="font-family:'Fredoka', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.15">Optimalizace zapojení LED</h2>
+<div style="display:flex;flex-direction:column;gap:8px">
+<p style="font-family:'Fredoka', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;color:#2E6B4E">480 → 141</p>
+<p style="font-size:40px;line-height:1.4;color:#3F5047">plošek → měděných ostrůvků</p>
+</div>
+<ol style="font-size:32px;line-height:1.4;color:#16271F">
+<li>Pozice LED jsou pevné, mění se jen to, který pár vývodů (anoda, katoda) sedí na které pozici.</li>
+<li>Python skript hledá nejlepší přiřazení simulovaným žíháním (výpočetní jádro v C, 4 běhy po 20 mil. kroků).</li>
+<li>Cíl: co nejméně ostrůvků. Sousední plošky stejného vodiče se spojí krátkým můstkem mědi.</li>
+</ol>
+<p style="font-size:32px;line-height:1.4;color:#3F5047">Výsledek: autorouter propojí desku za 2 min na 2 vrstvách. Předtím po 87 min zůstalo 76 nespojených cest.</p>
+</div>
+<aside>Obrázek ukazuje, jak jsou LED plošky propojené. Každá barva je jeden ze 16 vodičů matice, L0 až L15. Plošky spojené čárou tvoří jeden měděný ostrůvek.
+
+Problém: LED jsou tak nahusto, že při běžném rozložení byla každá ze 480 plošek samostatná a autorouter po 87 minutách pořád nespojil 76 cest.
+
+Pozice LED jsou dané, ale přiřazení dvojice vývodů k pozici je volné. Proto jsem napsal Python skript, který toto přiřazení optimalizuje metodou simulovaného žíhání; náročná část výpočtu běží v C, aby byla rychlá. Skript počítá ostrůvky, náhodně prohazuje páry LED a ponechává změny, které počet ostrůvků snižují, ze začátku občas i horší, aby neuvízl v lokálním minimu. Běží čtyřikrát paralelně po 20 milionech kroků, asi 10 až 20 minut, a vybere nejlepší výsledek.
+
+Ze 480 plošek je 141 ostrůvků. Deska se propojí za dvě minuty a stačí dvě vrstvy místo čtyř. Výsledek je uložený v jednom souboru, ze kterého se generuje schéma, deska, simulátor i tabulky firmwaru.</aside>
+</section>
+
+<section id="power" data-enter="zoom" style="background:#F5F0E6;color:#16271F;font-family:'Nunito Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-family:'Fredoka', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.15">Spotřeba a firmware</h2>
+<div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:32px">
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFCF6;border:2px solid #E2D9C6;border-radius:24px;padding:40px 48px">
+<p style="font-family:'Fredoka', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;color:#2E6B4E">7 mA</p>
+<p style="font-size:40px;line-height:1.4;color:#3F5047">průměrný odběr z USB-C, méně než 0,1 W</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFCF6;border:2px solid #E2D9C6;border-radius:24px;padding:40px 48px">
+<p style="font-family:'Fredoka', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;color:#2E6B4E">122 Hz</p>
+<p style="font-size:40px;line-height:1.4;color:#3F5047">obnovovací frekvence, oko neuvidí blikání</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFCF6;border:2px solid #E2D9C6;border-radius:24px;padding:40px 48px">
+<p style="font-family:'Fredoka', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;color:#2E6B4E">27 % paměti</p>
+<p style="font-size:40px;line-height:1.4;color:#3F5047">celý firmware má 17 KB z 64 KB</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px;background:#FFFCF6;border:2px solid #E2D9C6;border-radius:24px;padding:40px 48px">
+<p style="font-family:'Fredoka', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1;color:#2E6B4E">16 mA</p>
+<p style="font-size:40px;line-height:1.4;color:#3F5047">nejvíc na jeden pin, limit čipu je 20 mA</p>
+</div>
+</div>
+<aside>Stromeček je velmi úsporný: v průměru bere z USB-C asi 7 miliampérů, tedy méně než desetinu wattu. Díky tomu ho utáhne jakákoli nabíječka nebo port v počítači.
+
+LED se rozsvěcují postupně po skupinách, ale celé pole se překreslí 122krát za sekundu, takže oko žádné blikání nevidí.
+
+Firmware byl zkušebně přeložen celý, se všemi efekty, výrazy a řídicí logikou: zabere 17 kilobajtů z 64, takže zbývá místo na aktualizace. A obvod je navržený tak, aby žádný pin procesoru nepřekročil 16 miliampérů, i když je limit 20.</aside>
+</section>
+
+<section id="cost" data-enter="cube-x" style="background:#F5F0E6;color:#16271F;font-family:'Nunito Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-family:'Fredoka', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.15">Kolik stojí výroba jednoho stromečku</h2>
+<table style="font-size:40px;color:#16271F;padding:16px 24px">
+<tr><th style="width:40%;text-align:left">Série</th><th style="width:20%;text-align:right">100 ks</th><th style="width:20%;text-align:right">1 000 ks</th><th style="width:20%;text-align:right">10 000 ks</th></tr>
+<tr><td>Výroba a doprava do ČR</td><td style="text-align:right">3,83 €</td><td style="text-align:right">3,20 €</td><td style="text-align:right">1,98 €</td></tr>
+<tr><td>Podíl na certifikaci CE</td><td style="text-align:right">27,00 €</td><td style="text-align:right">2,70 €</td><td style="text-align:right">0,27 €</td></tr>
+<tr style="background:#E3EFE7"><td><b>Celkem za kus</b></td><td style="text-align:right"><b>30,83 €</b></td><td style="text-align:right"><b>5,90 €</b></td><td style="text-align:right"><b>2,25 €</b></td></tr>
+</table>
+<p style="font-size:40px;line-height:1.4;color:#3F5047">Certifikace stojí jednou 2 700 €. Nejdražší díl jsou LED: 86 % ceny součástek.</p>
+<aside>Teď peníze. Spočítal jsem tři velikosti série. Výroba včetně součástek, desky, osazení v JLCPCB, balení a dopravy do Česka vychází na 3,83 eura při 100 kusech, 3,20 při tisíci a necelá 2 eura při deseti tisících.
+
+K tomu se musí přičíst certifikace pro prodej v EU: hlavně test elektromagnetické kompatibility, celkem asi 2 700 eur jednorázově. U sto kusů je to 27 eur na kus, takže stovka je jen pilotní série. Při tisíci kusech vychází stromeček celkem na 5,90 eura, při deseti tisících na 2,25.
+
+Nejdražší položkou jsou LED, tvoří 86 procent ceny součástek. Samotný procesor stojí 12 centů.</aside>
+</section>
+
+<section id="market" data-enter="vortex" style="background:#FFC47D;color:#16271F;font-family:'Nunito Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-family:'Fredoka', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.15">Prodejní ceny</h2>
+<div style="display:flex;flex-direction:row;gap:32px;align-items:stretch">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFF6E8;border-radius:24px;padding:40px 48px">
+<p style="font-size:32px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A4A12">Maloobchod</p>
+<p style="font-family:'Fredoka', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1">12,90 €</p>
+<p style="font-size:40px;line-height:1.4;color:#3F5047">marže 3,08 € / ks</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFF6E8;border-radius:24px;padding:40px 48px">
+<p style="font-size:32px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A4A12">Vlastní e-shop</p>
+<p style="font-family:'Fredoka', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1">14,90 €</p>
+<p style="font-size:40px;line-height:1.4;color:#3F5047">marže 7,99 € / ks</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFF6E8;border-radius:24px;padding:40px 48px">
+<p style="font-size:32px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7A4A12">B2B s logem</p>
+<p style="font-family:'Fredoka', Arial, sans-serif;font-size:64px;font-weight:600;line-height:1.1">6,90 €</p>
+<p style="font-size:40px;line-height:1.4;color:#3F5047">bez DPH, marže 4,65 € / ks</p>
+</div>
+</div>
+<p style="font-size:32px;color:#4A3A22">Marže při sérii 10 000 ks. Maloobchodní ceny včetně 21 % DPH.</p>
+<p style="font-size:40px;line-height:1.4">Stavebnice z AliExpressu stojí 2–4 $. PixelPine cílí na hotové dárkové produkty v pásmu 10–15 €.</p>
+<aside>Navržené ceny pro tři prodejní kanály. Maloobchod 12,90 eura s DPH, vlastní e-shop 14,90 eura, firemní zakázky s vlastním logem na desce 6,90 eura bez DPH, od 500 kusů. Logo v potisku desky nic navíc nestojí.
+
+Marže na slajdu platí pro sérii 10 000 kusů, kde jsou ziskové všechny kanály. Při 1 000 kusech je maloobchod ztrátový, protože obchodník si bere zhruba polovinu ceny a certifikace se rozpočítá na málo kusů; první série by se proto prodávala přes vlastní e-shop a B2B.
+
+Cenou nelze konkurovat stavebnicím z AliExpressu za 2 až 4 dolary. Produkt cílí na segment hotových dárků v pásmu 10 až 15 eur.</aside>
+</section>
+
+<section id="end" data-enter="led-spiral" data-ambient="leds" style="background:#13221B;color:#F5F0E6;font-family:'Nunito Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:row;align-items:center;gap:96px">
+<div style="flex:1;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-family:'Fredoka', Arial, sans-serif;font-size:96px;font-weight:600;line-height:1.1">Děkuji za pozornost</h2>
+<p style="font-size:40px;line-height:1.4;color:#E4DDCF">Simulátor efektů:</p>
+<p style="font-size:40px;font-weight:700;color:#FFC47D"><a href="https://machmar.github.io/pixelpine/">machmar.github.io/pixelpine</a></p>
+<p style="font-size:32px;line-height:1.4;color:#B9C6BD">Výrobní podklady pro JLCPCB jsou připravené.</p>
+</div>
+<img data-fx="power" src="media/fireworks.png" data-video="videa/11-zaver-ohnostroj.mp4" alt="Efekt Ohňostroj" style="width:640px;height:800px;object-fit:cover;border-radius:32px">
+<aside>Stav projektu: schéma, deska propojená na dvou vrstvách bez chyb DRC, kusovník a podklady pro objednávku v JLCPCB jsou hotové, stejně jako dokumentace pro označení CE. Firmware existuje zatím jako ověřovací překlad; finální ladění proběhne na skutečných deskách.
+
+Simulátor efektů je dostupný na machmar.github.io/pixelpine.
+
+Děkuji za pozornost, prostor pro dotazy.</aside>
+</section>
+
+</body>
+</html>

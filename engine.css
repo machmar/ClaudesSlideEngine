@@ -1,0 +1,76 @@
+/* slide-engine: animated HTML presentations. See README.md. */
+html, body { margin: 0; height: 100%; overflow: hidden; }
+body { background: #070b09; cursor: default; }
+body.se-idle { cursor: none; }
+body > section { display: none; }                 /* raw slides, before the engine picks them up */
+
+#se-stage { position: absolute; left: 0; top: 0; transform-origin: 0 0; perspective: 2600px; overflow: hidden; background: #070b09; }
+/* defaults a deck may override (zero specificity) ... */
+:where(#se-stage .se-slide) { flex-direction: column; overflow: hidden; }
+/* ... and what the engine needs (wins over a deck's own section rules) */
+#se-stage .se-slide { position: absolute; left: 0; top: 0; margin: 0; box-sizing: border-box; display: none;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+#se-stage .se-slide.se-on { display: flex; }
+#se-stage .se-slide.se-on[data-display="grid"] { display: grid; }
+:where(.se-slide > *:not(.se-ambient):not(.se-scanbar)) { position: relative; z-index: 1; }
+:where(.se-slide) :where(h1, h2, h3, h4, p, ul, ol, figure, blockquote) { margin: 0; }
+:where(.se-slide) :where(ol, ul) { padding-left: 1.3em; display: flex; flex-direction: column; gap: 12px; }
+:where(.se-slide) a { color: inherit; }
+:where(.se-slide) table { border-collapse: collapse; width: 100%; }
+:where(.se-slide) :where(th, td) { padding: var(--cell-pad, .35em .6em); border-bottom: 2px solid rgba(128, 128, 128, .25); }
+:where(.se-slide) th { font-weight: 700; text-align: left; }
+:where(.se-slide) :where(img, video) { display: block; }
+
+.se-ambient { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.se-w { display: inline-block; white-space: nowrap; }
+.se-c { display: inline-block; transform-origin: 50% 80%; }
+.se-scanbar { position: absolute; z-index: 3; width: 14px; pointer-events: none; border-radius: 7px;
+  background: linear-gradient(#fff6, var(--se-accent-light), #fff6);
+  box-shadow: 0 0 30px 12px var(--se-accent-a75), 0 0 90px 30px var(--se-accent-a35); }
+.se-ring { position: absolute; z-index: 30; border-radius: 50%; pointer-events: none; box-sizing: border-box;
+  border: 14px solid var(--se-accent-light); box-shadow: 0 0 60px 20px var(--se-accent-a75), inset 0 0 60px 20px var(--se-accent-a60); }
+#se-fx { position: absolute; left: 0; top: 0; z-index: 40; pointer-events: none; }
+#se-dots { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); display: flex; gap: 14px; z-index: 50; pointer-events: none; }
+#se-dots i { width: 12px; height: 12px; border-radius: 50%; background: rgba(128, 128, 128, .35); transition: background .5s, box-shadow .5s, transform .5s; }
+#se-dots i.seen { background: var(--se-accent-a45); }
+#se-dots i.cur { background: var(--se-accent-light); box-shadow: 0 0 10px 3px var(--se-accent-a90), 0 0 26px 8px var(--se-accent-a50); transform: scale(1.35); }
+body[data-dots="off"] #se-dots { display: none; }
+#se-notes { position: fixed; left: 0; right: 0; bottom: 0; max-height: 34vh; overflow: auto; z-index: 100; display: none;
+  background: rgba(8, 14, 11, .92); color: #e9e2d3; font: 20px/1.5 system-ui, Arial, sans-serif; padding: 18px 28px; white-space: pre-wrap;
+  border-top: 2px solid var(--se-accent); }
+#se-notes.show { display: block; }
+#se-hint { position: fixed; left: 50%; top: 18px; transform: translateX(-50%); z-index: 100; background: rgba(8, 14, 11, .85); color: #e9e2d3;
+  font: 16px/1.4 system-ui, Arial, sans-serif; padding: 10px 18px; border-radius: 10px; transition: opacity .8s; white-space: nowrap; }
+#se-hint b { color: var(--se-accent); }
+
+/* overview grid (scroll wheel / G) */
+#se-ov { position: absolute; inset: 0; z-index: 60; display: none; }
+#se-ov.show { display: block; }
+.se-ov-bg { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 40%, #17271f, #070b09 75%); }
+.se-ov-grid { position: absolute; left: 0; top: 0; width: 100%; height: 100%; transition: transform .35s cubic-bezier(.16, 1, .3, 1); }
+.se-th { position: absolute; overflow: hidden; border-radius: 14px; transform-origin: 0 0; cursor: pointer; background: #000;
+  filter: brightness(.55) saturate(.8); box-shadow: 0 12px 34px rgba(0, 0, 0, .55); transition: filter .25s, box-shadow .25s; }
+.se-th:hover { filter: brightness(.8) saturate(.9); }
+.se-th.sel { filter: none; box-shadow: 0 0 0 6px var(--se-accent-light), 0 0 44px 14px var(--se-accent-a60), 0 12px 34px rgba(0, 0, 0, .55); }
+.se-th > .se-slide { pointer-events: none; }
+.se-num { position: absolute; left: 14px; top: 12px; z-index: 5; font: 700 28px/1 system-ui, Arial, sans-serif; color: #fff;
+  background: rgba(8, 14, 11, .75); padding: 6px 12px; border-radius: 8px; }
+.se-th.sel .se-num { background: var(--se-accent); color: #0b130f; }
+
+/* talk timer (T hides/shows, Shift+T resets) */
+#se-timer { position: absolute; right: 28px; bottom: 18px; z-index: 65; pointer-events: none; font: 600 28px/1 system-ui, Arial, sans-serif;
+  font-variant-numeric: tabular-nums; color: #f5f0e6; background: rgba(8, 14, 11, .55); padding: 8px 14px; border-radius: 10px;
+  opacity: .35; transition: opacity .5s; }
+#se-timer.run { opacity: .85; }
+body.se-timer-off #se-timer { display: none; }
+
+/* help panel (H / ? / F1, closes itself after a few seconds) */
+#se-help { position: fixed; inset: 0; z-index: 120; display: flex; align-items: center; justify-content: center; pointer-events: none;
+  opacity: 0; transition: opacity .3s; background: rgba(4, 7, 5, .45); }
+#se-help.show { opacity: 1; pointer-events: auto; }
+#se-help > div { background: rgba(8, 14, 11, .94); color: #e9e2d3; font: 18px/1.45 system-ui, Arial, sans-serif; padding: 22px 30px 26px;
+  border-radius: 14px; border: 2px solid var(--se-accent); box-shadow: 0 0 40px var(--se-accent-a35); max-width: 92vw; }
+#se-help h3 { margin: 0 0 12px; color: var(--se-accent); font-size: 22px; }
+#se-help table { border-collapse: collapse; }
+#se-help th { text-align: left; color: var(--se-accent-light); font-weight: 700; padding: 5px 28px 5px 0; vertical-align: top; }
+#se-help td { padding: 5px 0; }

@@ -1,0 +1,9 @@
+# local session notes of the author
+HANDOVER.md
+# decks made for people, and built single-file outputs
+talks/
+*.built.html
+demo/*/PixelPine.html
+demo/*/showcase.html
+__pycache__/
+.claude/
