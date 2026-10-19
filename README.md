@@ -10,6 +10,10 @@ how to control it) · [PixelPine](https://machmar.github.io/ClaudesSlideEngine/d
 > can write decks by hand with the reference below, but nothing here is polished for that: there is no editor, no
 > theme system, no guarantees, and the API changes whenever a talk needs something new.
 
+**Pull requests are highly welcome:** new transitions, element effects, controls, fixes, anything that makes the
+decks better. Made it with Claude while building your own talk? Send it upstream. See
+[Contributing](CLAUDE.md#contributing-pull-requests-welcome) for what a good PR includes.
+
 A plain HTML file of `<section>` slides becomes a heavily animated presentation: LED-matrix wipes, 3D cube turns,
 an iris, blinds, a pixel dissolve, a zoom-through and a vortex between slides, every element building in (headings
 letter by letter, numbers counting up, cards flipping in, table rows sliding in, clips switching on), a zoomable

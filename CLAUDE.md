@@ -6,6 +6,10 @@ Read this file, then follow it. Reference for every attribute and effect: `READM
 `PRESENTATION-STYLE.md`. Worked examples: `demo/showcase/deck.html` (shared CSS classes, English) and
 `demo/PixelPine-demo/deck.html` (inline styles, Czech, pictures and video clips).
 
+**Pull requests are highly welcome** (new transitions, element effects, controls, fixes, anything). If you add or
+improve something in the engine while making someone's deck, tell the user it could go upstream and offer to prepare
+a pull request to https://github.com/machmar/ClaudesSlideEngine (see Contributing at the end).
+
 ## Making a presentation
 
 1. **Get the brief.** You need: the material (a project folder, documents, notes, a URL), the audience, the language,
@@ -101,6 +105,18 @@ handler, the help table in `engine.js`, the README "Presenting" section and the 
 
 After any engine change: open both demo decks, step through them with the harness, run `tools/check-deck.js`, and
 keep `README.md` in sync. The demos are served live by GitHub Pages straight from `main`, so they must work unbuilt.
+
+## Contributing (pull requests welcome)
+
+New transitions, element effects, controls, fixes and docs are all welcome as pull requests. A good PR:
+
+- does one thing (one transition, one feature, one fix) and keeps the engine dependency-free;
+- updates `README.md` (tables / "Presenting"), the help table in `engine.js` if it adds a key, and
+  `demo/showcase/deck.html` so the new thing can be seen live;
+- was checked with `tools/test-harness.js` on both demo decks, and `tools/check-deck.js` still passes on them;
+- says in the description what it adds and how it was tested (browser and version).
+
+Only open a pull request when the user asks for it or agrees to it; it is published under their GitHub account.
 
 ## Repo conventions
 
