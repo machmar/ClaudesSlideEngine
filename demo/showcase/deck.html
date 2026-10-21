@@ -4,46 +4,59 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Claude's Slide Engine: showcase</title>
-<!-- Showcase of the engine. Single-file build: python ../../build.py deck.html -o showcase.html -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&family=Nunito+Sans:wght@400;600;700&display=swap">
+<!-- Showcase of the engine. Order: every info slide first, using only the neutral core; then one section per theme,
+     in the order the themes were added (each section starts with a divider slide naming the theme). A new theme
+     appends its own section at the end. Single-file build: python ../../build.py deck.html -o showcase.html -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Fredoka:wght@400..700&family=Nunito+Sans:wght@400;600;700&display=swap">
 <link rel="stylesheet" href="../../engine.css">
 <script src="../../themes/pixelpine/theme.js" defer></script>
 <script src="../../engine.js" defer></script>
 <style>
-  /* deck-wide look: plain CSS, nothing engine-specific */
-  section { font-family: 'Nunito Sans', Arial, sans-serif; padding: 128px; gap: 48px; background: #f5f0e6; color: #16271f; }
-  section.dark { background: #13221b; color: #f5f0e6; }
-  section.accent { background: #ffc47d; }
-  h1, h2 { font-family: Fredoka, Arial, sans-serif; font-weight: 600; }
+  /* neutral core look (info slides) */
+  section { font-family: Inter, Arial, sans-serif; padding: 128px; gap: 48px; background: #f4f5f7; color: #1d2229; }
+  section.dark { background: #16191e; color: #eef0f3; }
+  section.accent { background: #dfe7f0; }
+  h1, h2 { font-weight: 700; letter-spacing: -.01em; }
   h1 { font-size: 128px; line-height: 1.05; }
   h2 { font-size: 64px; line-height: 1.15; }
   p, li { font-size: 40px; line-height: 1.4; }
-  .label { font-size: 32px; line-height: 1.35; color: #3f5047; }
-  .kicker { font-size: 32px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #ffc47d; }
-  .big { font-family: Fredoka, Arial, sans-serif; font-size: 64px; font-weight: 600; color: #2e6b4e; }
-  .card { flex: 1; display: flex; flex-direction: column; gap: 12px; background: #fffcf6; border: 2px solid #e2d9c6; border-radius: 24px; padding: 40px 48px; }
+  .label { font-size: 32px; line-height: 1.35; color: #5a6470; }
+  .dark .label { color: #a9b2bd; }
+  .kicker { font-size: 32px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #6f8fb0; }
+  .big { font-size: 64px; font-weight: 700; color: #2f5d8a; }
+  .card { flex: 1; display: flex; flex-direction: column; gap: 12px; background: #ffffff; border: 2px solid #dde1e6; border-radius: 24px; padding: 40px 48px; }
   .row { display: flex; gap: 32px; }
-  pre { font: 28px/1.45 Consolas, 'Courier New', monospace; background: #13221b; color: #e9e2d3; padding: 32px 40px; border-radius: 20px; margin: 0; }
-  pre b { color: #ffc47d; font-weight: 400; }
+  pre { font: 28px/1.45 Consolas, 'Courier New', monospace; background: #16191e; color: #e6e7ea; padding: 32px 40px; border-radius: 20px; margin: 0; }
+  pre b { color: #9fb3c8; font-weight: 400; }
   .tile { flex: 1; height: 360px; border-radius: 24px; display: flex; align-items: flex-end; padding: 28px; box-sizing: border-box;
-    font: 600 40px Fredoka, Arial, sans-serif; color: #fff; }
+    font: 700 40px Inter, Arial, sans-serif; color: #fff; }
   .chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
-  .chip { background: #fffcf6; border: 2px solid #e2d9c6; border-radius: 16px; padding: 20px 28px; font: 600 32px Fredoka, Arial, sans-serif; color: #2e6b4e; }
+  .chip { background: #ffffff; border: 2px solid #dde1e6; border-radius: 16px; padding: 20px 28px; font: 600 32px Inter, Arial, sans-serif; color: #2f5d8a; }
   table { font-size: 32px; }
-  th { color: #2e6b4e; }
-  kbd { font: 700 30px Consolas, monospace; background: #fffcf6; border: 2px solid #c9bea8; border-bottom-width: 5px; border-radius: 10px; padding: 2px 12px; }
+  th { color: #2f5d8a; }
+  kbd { font: 700 30px Consolas, monospace; background: #ffffff; border: 2px solid #c3c9d1; border-bottom-width: 5px; border-radius: 10px; padding: 2px 12px; }
+
+  /* theme sections: each theme's slides get that theme's own look */
+  section.pp { font-family: 'Nunito Sans', Arial, sans-serif; background: #f5f0e6; color: #16271f; }
+  section.pp.dark { background: #13221b; color: #f5f0e6; }
+  section.pp h1, section.pp h2 { font-family: Fredoka, Arial, sans-serif; font-weight: 600; letter-spacing: 0; }
+  section.pp .kicker { color: #ffc47d; }
+  section.pp .label { color: #3f5047; }
+  section.pp.dark .label { color: #cfc7b6; }
 </style>
 </head>
-<body data-accent="#ffc47d" data-lang="en">
+<body data-accent="#9fb3c8" data-lang="en" data-led-color="#ffc47d">
 
-<section class="dark" data-ambient="leds" style="justify-content:center">
+<!-- ================= info slides: neutral core only ================= -->
+
+<section class="dark" style="justify-content:center">
   <p class="kicker">Claude's Slide Engine</p>
   <h1>Animated slides<br>from plain HTML</h1>
-  <p style="color:#e4ddcf">Press → to start. Scroll the mouse wheel for an overview, H for all controls.</p>
-  <aside>These are speaker notes. Every slide can have them: put the text in an aside element and press N while presenting. This deck shows what the engine does; each slide says which transition brought it in.</aside>
+  <p style="color:#c9ced5">Press → to start. Scroll the mouse wheel for an overview, H for all controls.</p>
+  <aside>These are speaker notes. Every slide can have them: put the text in an aside element and press N while presenting. The first part of this deck uses only the neutral core; the themes follow at the end, one section each.</aside>
 </section>
 
-<section data-enter="led-radial" data-focus="960,540" style="flex-direction:row;align-items:center;gap:80px">
+<section data-enter="cube-y" style="flex-direction:row;align-items:center;gap:80px">
   <div style="display:flex;flex-direction:column;gap:40px;flex:1">
     <h2>A deck is a list of sections</h2>
     <ul>
@@ -51,7 +64,7 @@
       <li>Two files to link, no install</li>
       <li>Everything else is automatic</li>
     </ul>
-    <p class="label">Came in with led-radial (pixelpine theme)</p>
+    <p class="label">Came in with cube-y.</p>
   </div>
   <pre>&lt;section <b>data-enter="cube-y"</b>&gt;
   &lt;h2&gt;Second slide&lt;/h2&gt;
@@ -62,22 +75,22 @@
   <aside>The source of a deck is just sections. The engine moves them onto a 1920 by 1080 stage, scales it to the screen and adds the animations.</aside>
 </section>
 
-<section data-enter="cube-y">
+<section data-enter="dissolve">
   <h2>Numbers count up by themselves</h2>
   <div class="row">
     <div class="card"><p class="big">240 LED</p><p class="label">Big numbers count from zero</p></div>
     <div class="card"><p class="big">12,90 €</p><p class="label">Decimal commas and spaces work</p></div>
     <div class="card"><p class="big">480 → 141</p><p class="label">An arrow counts up, then down</p></div>
   </div>
-  <p class="label">Headings build letter by letter, boxes flip in like cards. Came in with cube-y.</p>
+  <p class="label">Headings build letter by letter, boxes flip in like cards. Came in with dissolve.</p>
   <aside>Nothing on this slide has an animation attribute. Headings, paragraphs, cards and numbers are recognised automatically.</aside>
 </section>
 
 <section data-enter="iris" style="flex-direction:row;align-items:center;gap:80px">
-  <svg data-fx="spin3d" width="560" height="600" viewBox="0 0 560 600" aria-label="A tree"><polygon points="280,40 520,540 40,540" fill="#2e6b4e"/><rect x="250" y="540" width="60" height="50" fill="#7a5a3a"/><circle cx="280" cy="40" r="30" fill="#ffc47d"/><circle cx="220" cy="300" r="18" fill="#ffc47d"/><circle cx="340" cy="400" r="18" fill="#ffc47d"/><circle cx="260" cy="460" r="18" fill="#ffc47d"/></svg>
+  <svg data-fx="spin3d" width="560" height="600" viewBox="0 0 560 600" aria-label="A box"><polygon points="280,60 500,180 280,300 60,180" fill="#9fb3c8"/><polygon points="60,180 280,300 280,560 60,440" fill="#4f6f8f"/><polygon points="500,180 280,300 280,560 500,440" fill="#2f4a66"/></svg>
   <div style="display:flex;flex-direction:column;gap:32px;flex:1">
     <h2>Pick an effect per element</h2>
-    <p>This tree uses <b>data-fx="spin3d"</b>.</p>
+    <p>This box uses <b>data-fx="spin3d"</b>.</p>
     <p class="label">The iris opened from the first picture on the slide.</p>
   </div>
   <aside>The automatic choice can be overridden on any element with data-fx. The iris transition starts at the slide's first picture, or at data-focus.</aside>
@@ -94,40 +107,35 @@
   <aside>Rows come in one at a time and every right-aligned number counts up.</aside>
 </section>
 
-<section data-enter="dissolve">
+<section data-enter="zoom">
   <h2>Effects for pictures and boxes</h2>
   <div class="row">
-    <div class="tile" data-fx="power" style="background:linear-gradient(135deg,#2e6b4e,#13221b)">power</div>
-    <div class="tile" data-fx="scan" style="background:linear-gradient(135deg,#3b6f9e,#16271f)">scan</div>
-    <div class="tile" data-fx="radial" style="background:linear-gradient(135deg,#c2603d,#5a2a1a)">radial</div>
-    <div class="tile" data-fx="spin3d" style="background:linear-gradient(135deg,#ffc47d,#c98a3a);color:#16271f">spin3d</div>
+    <div class="tile" data-fx="power" style="background:linear-gradient(135deg,#2f5d8a,#16191e)">power</div>
+    <div class="tile" data-fx="scan" style="background:linear-gradient(135deg,#3b7a78,#16191e)">scan</div>
+    <div class="tile" data-fx="radial" style="background:linear-gradient(135deg,#6b5b95,#16191e)">radial</div>
+    <div class="tile" data-fx="spin3d" style="background:linear-gradient(135deg,#9fb3c8,#5a6470)">spin3d</div>
   </div>
-  <p class="label">Also: pop, flip, rise, letters, rows, list, tilt, fade, count. Came in with dissolve.</p>
+  <p class="label">Also: pop, flip, rise, letters, rows, list, tilt, fade, count. Came in with zoom.</p>
   <aside>power switches on like an old screen and suits videos, scan suits schematics and screenshots, radial spreads from the top, spin3d suits product renders.</aside>
 </section>
 
-<section data-enter="led-rain" style="flex-direction:row;align-items:center;gap:80px">
+<section data-enter="cube-x" style="flex-direction:row;align-items:center;gap:80px">
   <img src="../PixelPine-demo/media/aurora.png" data-video="../PixelPine-demo/videa/02-funkce-polarni-zare.mp4" data-fx="power" alt="Clip of the PixelPine aurora animation" style="width:520px;height:650px;border-radius:24px">
   <div style="display:flex;flex-direction:column;gap:32px;flex:1">
     <h2>Video clips</h2>
     <p>An image with <b>data-video</b> becomes a muted loop that plays only while its slide is shown.</p>
-    <p class="label">Came in with led-rain (pixelpine theme).</p>
+    <p class="label">Came in with cube-x.</p>
   </div>
   <aside>The picture is the poster frame, so the slide looks right even before the clip loads.</aside>
 </section>
 
-<section data-enter="zoom">
+<section data-enter="vortex">
   <h2>Every slide picks its entrance</h2>
-  <p class="label">Core, always there:</p>
   <div class="chips">
     <div class="chip">cube-y</div><div class="chip">cube-x</div><div class="chip">iris</div><div class="chip">blinds</div>
     <div class="chip">dissolve</div><div class="chip">zoom</div><div class="chip">vortex</div><div class="chip">fade</div>
   </div>
-  <p class="label">From the pixelpine theme:</p>
-  <div class="chips">
-    <div class="chip">led-radial</div><div class="chip">led-rain</div><div class="chip">led-spiral</div><div class="chip">led-diagonal</div>
-  </div>
-  <p class="label">data-enter="name" on the section; going back plays it in reverse. Came in with zoom.</p>
+  <p class="label">The neutral core's transitions: data-enter="name" on the section; going back plays it in reverse. Themes add more, shown at the end of this deck. Came in with vortex.</p>
   <aside>Slides without data-enter take the next transition from a cycle. Going back plays the leaving slide's transition in reverse.</aside>
 </section>
 
@@ -135,11 +143,11 @@
   <div style="display:flex;flex-direction:column;gap:40px;flex:1">
     <h2>Themes add more, and mix</h2>
     <ul>
-      <li>The core is neutral</li>
-      <li>A theme adds transitions, effects and backgrounds</li>
+      <li>The core is neutral, like this part</li>
+      <li>A theme adds transitions, effects, backgrounds</li>
       <li>Link any number of themes in one deck</li>
     </ul>
-    <p class="label">All themes: themes/README.md. Came in with iris.</p>
+    <p class="label">Each theme has a section at the end. All themes: themes/README.md. Came in with iris.</p>
   </div>
   <pre>&lt;script src="themes/pixelpine/theme.js" defer&gt;
 &lt;script src="themes/train/theme.js" defer&gt;
@@ -150,7 +158,7 @@
   <aside>Every name is unique across the core and all themes, so one deck can use the LED wipes of one theme and the cards of another. Themes are linked before the engine. New themes are welcome as pull requests.</aside>
 </section>
 
-<section class="accent" data-enter="vortex">
+<section class="accent" data-enter="cube-y">
   <h2>Controls</h2>
   <table style="font-size:32px;padding:12px 20px">
     <tr><th style="width:42%">Key or button</th><th>Does</th></tr>
@@ -160,36 +168,67 @@
     <tr><td><kbd>F</kbd> · <kbd>N</kbd> · <kbd>T</kbd></td><td>full screen · speaker notes · timer</td></tr>
     <tr><td><kbd>M</kbd> · <kbd>H</kbd></td><td>simple transitions · all controls</td></tr>
   </table>
-  <aside>Clickers that send PageUp and PageDown work. The mouse side buttons work whether the driver sends them as buttons, keys or browser history. Came in with vortex.</aside>
+  <aside>Clickers that send PageUp and PageDown work. The mouse side buttons work whether the driver sends them as buttons, keys or browser history. Came in with cube-y.</aside>
 </section>
 
-<section data-enter="cube-x">
+<section data-enter="dissolve">
   <h2>Try it now</h2>
   <div class="row">
     <div class="card"><p class="big">Scroll</p><p class="label">The slide shrinks into a grid. Keep scrolling, then press →.</p></div>
     <div class="card"><p class="big">N</p><p class="label">Shows the speaker notes of this slide.</p></div>
     <div class="card"><p class="big">T</p><p class="label">The timer in the bottom right started with your first →.</p></div>
   </div>
-  <p class="label">Came in with cube-x.</p>
+  <p class="label">Came in with dissolve.</p>
   <aside>You found the notes. The timer counts from the first slide change, so the deck can be opened before the talk. Shift+T resets it.</aside>
 </section>
 
-<section data-enter="led-diagonal">
+<section data-enter="blinds">
   <h2>Made for Claude to write</h2>
   <ul>
     <li>You give Claude the material and the talk length</li>
-    <li>Claude writes the slides and notes, following CLAUDE.md</li>
+    <li>Claude writes the slides, notes and a theme</li>
     <li>build.py packs everything into one HTML file</li>
   </ul>
-  <p class="label">Came in with led-diagonal (pixelpine theme).</p>
+  <p class="label">Came in with blinds.</p>
   <aside>The repository's CLAUDE.md tells Claude how to plan, write, check and build a deck, so you only review the result.</aside>
 </section>
 
-<section class="dark" data-enter="led-spiral" data-ambient="leds" style="justify-content:center">
+<section class="dark" data-enter="zoom" style="justify-content:center">
   <h1>One file, any PC</h1>
-  <p style="color:#e4ddcf">python build.py deck.html -o talk.html</p>
-  <p class="label" style="color:#cfc7b6">Came in with led-spiral, LED matrix behind: both from the pixelpine theme. Scroll for the overview.</p>
-  <aside>The built file has the engine, the pictures and the clips inside, so it can go on a USB stick and open in any current browser.</aside>
+  <p style="color:#c9ced5">python build.py deck.html -o talk.html</p>
+  <p class="label">Came in with zoom. Next: the themes, one section each.</p>
+  <aside>The built file has the engine, the themes, the pictures and the clips inside, so it can go on a USB stick and open in any current browser. That is the end of the info part; the rest of the deck shows the themes.</aside>
+</section>
+
+<!-- ================= theme: pixelpine (the LED tree) ================= -->
+
+<section class="pp dark" data-enter="led-radial" data-ambient="leds" style="justify-content:center">
+  <p class="kicker">Theme: pixelpine</p>
+  <h1>The LED tree</h1>
+  <p style="color:#e4ddcf">LED-matrix wipes and a twinkling LED background, from the PixelPine Christmas tree talk.</p>
+  <p class="label">Came in with led-radial, data-ambient="leds" behind it.</p>
+  <aside>The pixelpine theme: four LED wipe transitions and the LED matrix background. Its LEDs glow in data-led-color, here the tree's warm yellow, while the rest of the deck keeps the neutral accent.</aside>
+</section>
+
+<section class="pp" data-enter="led-rain">
+  <h2>led-rain</h2>
+  <p>LEDs light up falling like rain, cover the screen, then switch off.</p>
+  <p class="label">Came in with led-rain (pixelpine).</p>
+  <aside>All four LED wipes fill the screen with data-led-bg before revealing the new slide.</aside>
+</section>
+
+<section class="pp" data-enter="led-spiral">
+  <h2>led-spiral</h2>
+  <p>The same LEDs, sweeping in a spiral from the centre.</p>
+  <p class="label">Came in with led-spiral (pixelpine).</p>
+  <aside>led-spiral sweeps around the centre of the screen.</aside>
+</section>
+
+<section class="pp" data-enter="led-diagonal">
+  <h2>led-diagonal</h2>
+  <p>And across the diagonal. A real talk with this theme: demo/PixelPine-demo.</p>
+  <p class="label">Came in with led-diagonal (pixelpine).</p>
+  <aside>led-radial, used on the theme's first slide, starts at data-focus or at the outgoing slide's first picture.</aside>
 </section>
 
 </body>

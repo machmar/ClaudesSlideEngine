@@ -10,9 +10,9 @@ how to control it) · [PixelPine](https://machmar.github.io/ClaudesSlideEngine/d
 > can write decks by hand with the reference below, but nothing here is polished for that: there is no editor, no
 > guarantees, and the API changes whenever a talk needs something new.
 
-**Pull requests are highly welcome:** new themes, transitions, element effects, controls, fixes, anything that makes
-the decks better, as many changes in one PR as belong together. Made a theme with Claude for your own talk? Send it
-upstream, ideally with the talk as a demo. See
+**Pull requests are highly welcome:** new themes, transitions, element effects, controls, fixes, new recipes,
+anything that makes the decks better, as many changes in one PR as belong together. Claude makes a theme for every new
+presentation; if yours turned out different from the existing ones, send it upstream with the talk as a demo. See
 [Contributing](CLAUDE.md#contributing-pull-requests-welcome) for what a good PR includes.
 
 A plain HTML file of `<section>` slides becomes a heavily animated presentation: 3D cube turns, an iris, blinds, a
@@ -31,7 +31,8 @@ scroll wheel, speaker notes and a talk timer. The core is neutral; **[themes](th
 | `build.py` | Packs a deck into one self-contained HTML file (Python 3, standard library only). |
 | [`CLAUDE.md`](CLAUDE.md) | Instructions for Claude: how to make or convert a presentation, how to change the engine. |
 | [`PRESENTATION-STYLE.md`](PRESENTATION-STYLE.md) | The default look and tone of a deck (sizes, colours, structure). |
-| `demo/showcase/` | Demo deck: every effect and the controls. |
+| [`RECIPES.md`](RECIPES.md) | How each kind of slide was solved before (KPIs, cost tables, schematics, clips, …), with the deck and slide. Updated by every new deck. |
+| `demo/showcase/` | Demo deck: first the neutral core and the controls, then one section per theme. |
 | `demo/PixelPine-demo/` | A real talk built with the engine (Czech, with pictures and clips). |
 | `tools/test-harness.js` | Lets an automated browser step through animations frame by frame. |
 | `tools/check-deck.js` | Finds overflowing elements, stray font sizes, missing notes and repeated transitions. |

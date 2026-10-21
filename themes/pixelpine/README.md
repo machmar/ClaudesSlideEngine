@@ -18,5 +18,6 @@ Demo: [PixelPine-demo](../../demo/PixelPine-demo/deck.html) (Czech) and the
 | `led-diagonal` | transition | the same, across the diagonal |
 | `leds` | ambient | a faint LED matrix with a slow wave and twinkles behind the slide (`data-ambient="leds"`), good on dark title slides |
 
-Options on `<body>`: `data-led-bg` = the colour the LEDs fill the screen with (default `#0b130f`). The LEDs glow in
-`data-accent`; the PixelPine talk uses `#ffc47d`.
+Options on `<body>`: `data-led-bg` = the colour the LEDs fill the screen with (default `#0b130f`); `data-led-color` =
+the colour the LEDs glow in (default: the deck's `data-accent`; the PixelPine talk uses `#ffc47d` as its accent).
+Set `data-led-color` when the LEDs should keep their warm glow in a deck whose accent is something else.
