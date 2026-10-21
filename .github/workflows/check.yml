@@ -16,6 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: JavaScript syntax
-        run: for f in engine.js themes/*/theme.js tools/*.js; do node --check "$f" || exit 1; done
+        run: for f in engine.js themes/catalogue.js themes/*/theme.js tools/*.js; do node --check "$f" || exit 1; done
       - name: Themes and catalogue
         run: python3 tools/themes.py --check

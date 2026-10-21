@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Theme demo</title>
+<!-- Every transition, element effect, ambient background and progress style of the core and of every theme, one at a
+     time on a stage with slide A (blue) and slide B (orange). The list comes from catalogue.js, which
+     python tools/themes.py regenerates: a new theme shows up here without editing this page. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<script src="catalogue.js"></script>
+<style>
+  :root { --bg: #16191e; --fg: #eef0f3; --muted: #a9b2bd; --card: #1f242b; --line: #343b45; --accent: #9fb3c8; --a: #2f5d8a; --b: #c2603d; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.5 Inter, Arial, sans-serif; }
+  header { padding: 28px 24px 8px; max-width: 1400px; margin: 0 auto; }
+  h1 { font-size: clamp(28px, 4vw, 40px); margin: 0 0 6px; letter-spacing: -.01em; }
+  header p { color: var(--muted); margin: 0; }
+  a { color: var(--accent); }
+  .ab { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin: 0 2px 0 4px; }
+  .wrap { display: grid; grid-template-columns: 300px 1fr; gap: 24px; padding: 20px 24px 40px; max-width: 1400px; margin: 0 auto; }
+  nav { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; max-height: calc(100vh - 150px); overflow: auto; }
+  nav h2 { font-size: 15px; margin: 14px 0 2px; }
+  nav h2:first-child { margin-top: 0; }
+  nav .desc { color: var(--muted); font-size: 13px; margin: 0 0 6px; }
+  nav h3 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin: 10px 0 4px; }
+  nav .names { display: flex; flex-wrap: wrap; gap: 6px; }
+  nav button { font: 600 14px Inter, Arial, sans-serif; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  nav button:hover { border-color: var(--accent); }
+  nav button[aria-pressed="true"] { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+  .stage { aspect-ratio: 16 / 9; width: 100%; background: #0c0d0f; border-radius: 16px; overflow: hidden; border: 1px solid var(--line); }
+  .stage iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-top: 14px; }
+  .bar .what { flex: 1 1 280px; min-width: 0; }
+  .bar .what b { font-size: 20px; }
+  .bar .what span { color: var(--muted); }
+  code { font: 14px Consolas, 'Courier New', monospace; background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px; overflow-wrap: anywhere; }
+  .run { font: 700 16px Inter, Arial, sans-serif; color: var(--bg); background: var(--accent); border: 0; border-radius: 10px; padding: 10px 20px; cursor: pointer; }
+  .run.secondary { background: transparent; color: var(--fg); border: 1px solid var(--line); }
+  .run:focus-visible, nav button:focus-visible { outline: 3px solid var(--fg); outline-offset: 2px; }
+  .use { color: var(--muted); margin-top: 10px; }
+  @media (max-width: 820px) { .wrap { grid-template-columns: 1fr; } nav { max-height: 320px; order: 2; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Theme demo</h1>
+  <p>Pick anything on the left and press <b>Run</b>. Slide A is <span class="ab" style="background:var(--a)"></span>blue, slide
+    B <span class="ab" style="background:var(--b)"></span>orange, so you can see what goes where. The list is built from the
+    <a href="https://github.com/machmar/ClaudesSlideEngine/blob/main/themes/README.md#catalogue">catalogue</a>; every new theme appears here by itself.
+    <a href="../">Back to the start page</a>.</p>
+</header>
+<div class="wrap">
+  <nav id="list" aria-label="Transitions, effects, backgrounds and progress styles"></nav>
+  <main>
+    <div class="stage"><iframe id="stage" title="Demo stage" src="about:blank"></iframe></div>
+    <div class="bar">
+      <div class="what"><b id="name"></b> <span id="kind"></span></div>
+      <button class="run" id="run" type="button">▶ Run</button>
+      <button class="run secondary" id="back" type="button">◀ Back (B → A)</button>
+    </div>
+    <p class="use" id="use"></p>
+  </main>
+</div>
+<script>
+(() => {
+  const cat = window.SE_CATALOGUE;
+  const KINDS = [['transitions', 'Transitions', 'data-enter'], ['effects', 'Element effects', 'data-fx'], ['ambients', 'Backgrounds', 'data-ambient'], ['dots', 'Progress styles', 'data-dots']];
+  const groups = [{ name: 'core', title: 'Core (neutral)', description: 'Built into engine.js, always there.', provides: cat.core }, ...cat.themes];
+  const list = document.getElementById('list'), stage = document.getElementById('stage'), backBtn = document.getElementById('back');
+  let cur = null;
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+
+  groups.forEach(g => {
+    let h = `<h2>${esc(g.title)}</h2><p class="desc">${esc(g.description)}</p>`;
+    KINDS.forEach(([k, label]) => {
+      const names = (g.provides[k] || []).filter(n => !(g.name === 'core' && k === 'transitions' && n === 'none'));
+      if (!names.length) return;
+      h += `<h3>${label}</h3><div class="names">` + names.map(n => `<button type="button" aria-pressed="false" data-t="${esc(g.name)}" data-k="${k}" data-n="${esc(n)}">${esc(n)}</button>`).join('') + '</div>';
+    });
+    list.insertAdjacentHTML('beforeend', h);
+  });
+
+  function select(t, k, n, run = true) {
+    const btn = list.querySelector(`button[data-t="${t}"][data-k="${k}"][data-n="${n}"]`);
+    if (!btn) return false;
+    list.querySelectorAll('button[aria-pressed="true"]').forEach(b => b.setAttribute('aria-pressed', 'false'));
+    btn.setAttribute('aria-pressed', 'true');
+    cur = { t, k, n };
+    const [, label, attr] = KINDS.find(x => x[0] === k), g = groups.find(x => x.name === t);
+    document.getElementById('name').textContent = n;
+    document.getElementById('kind').textContent = `${label.toLowerCase().replace(/s$/, '')} · ${t === 'core' ? 'core' : 'theme ' + t}`;
+    const where = k === 'dots' ? 'on <body> or on a slide' : k === 'effects' ? 'on an element' : 'on a slide';
+    const link = t === 'core' ? 'Nothing to link: it is part of the core.' : `Link <code>themes/${t}/theme.js</code> before engine.js (<a href="https://github.com/machmar/ClaudesSlideEngine/blob/main/themes/${t}/README.md">${t} README</a>).`;
+    const opts = g.options && Object.keys(g.options).length ? ' Options on &lt;body&gt;: ' + Object.entries(g.options).map(([a, d]) => `<code>${esc(a)}</code> ${esc(d)}`).join(', ') + '.' : '';
+    document.getElementById('use').innerHTML = `Use: <code>${attr}="${esc(n)}"</code> ${where}. ${link}${opts}`;
+    backBtn.hidden = k !== 'transitions';
+    history.replaceState(null, '', `#${t}/${k}/${n}`);
+    if (run) play(false);
+    return true;
+  }
+  function play(back) {
+    if (!cur) return;
+    stage.src = `demo-stage.html?t=${encodeURIComponent(cur.t)}&k=${cur.k}&n=${encodeURIComponent(cur.n)}${back ? '&dir=back' : ''}&r=${Date.now()}`;
+  }
+  list.addEventListener('click', e => { const b = e.target.closest('button'); if (b) select(b.dataset.t, b.dataset.k, b.dataset.n); });
+  document.getElementById('run').addEventListener('click', () => play(false));
+  backBtn.addEventListener('click', () => play(true));
+
+  const [t, k, n] = decodeURIComponent(location.hash.slice(1)).split('/');
+  if (!(t && select(t, k, n))) { const first = list.querySelector('button'); select(first.dataset.t, first.dataset.k, first.dataset.n); }
+})();
+</script>
+</body>
+</html>

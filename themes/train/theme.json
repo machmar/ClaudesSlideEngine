@@ -3,15 +3,41 @@
   "title": "Train",
   "description": "A toy steam loco pulls slides away as wagons, steam clouds, a tunnel, level-crossing barriers, cards on wheels.",
   "author": "machmar (made with Claude)",
-  "tags": ["playful", "steam", "transport"],
+  "tags": [
+    "playful",
+    "steam",
+    "transport"
+  ],
   "provides": {
-    "transitions": ["barrier", "steam", "track", "train", "tunnel"],
-    "effects": ["depart", "puff", "tow", "wagon"],
-    "ambients": ["trains"],
-    "dots": ["track"]
+    "transitions": [
+      "barrier",
+      "steam",
+      "track",
+      "train",
+      "tunnel"
+    ],
+    "effects": [
+      "depart",
+      "puff",
+      "tow",
+      "wagon"
+    ],
+    "ambients": [
+      "trains"
+    ],
+    "dots": [
+      "track"
+    ]
   },
   "options": {
     "data-train": "loco body, chassis and wheel colours (default #c8402a,#2a5aa0,#1e1e22)"
   },
-  "demo": "demo/Nudgy-demo/deck.html"
+  "demo": "demo/Nudgy-demo/deck.html",
+  "accent": "#ff8a5c",
+  "preview": {
+    "tow": "<h2 data-fx=\"tow\">Pulled in by a loco</h2>",
+    "wagon": "<div class=\"card\" data-fx=\"wagon\"><p class=\"big\">240 g</p><p>rolls in on two wheels</p></div>",
+    "puff": "<div class=\"card\" data-fx=\"wagon\"><p class=\"big\" data-fx=\"puff\">0,11 $</p><p>out of a puff of steam</p></div>",
+    "depart": "<img data-fx=\"depart\" data-chimney=\".77,.12\" src=\"../demo/Nudgy-demo/media/loco_iso_cut.png\" alt=\"A toy locomotive\" style=\"width:620px;height:auto\">"
+  }
 }

@@ -8,6 +8,10 @@ effects freely**: a slide can come in with an LED wipe from one theme while its 
 **Every new presentation gets its own theme**, built from its subject, and it comes here when it adds something the
 catalogue doesn't have yet (see [CLAUDE.md](../CLAUDE.md), step 4 of "Making a presentation").
 
+**Try them: [`demo.html`](https://machmar.github.io/ClaudesSlideEngine/themes/demo.html)** plays every transition,
+effect, background and progress style of the core and of every theme, one at a time, between a blue slide A and an
+orange slide B. Its list is generated from the manifests, so a new theme shows up there by itself.
+
 ## Using themes in a deck
 
 Link each theme's `theme.js` **before** `engine.js`:
@@ -38,8 +42,9 @@ build like the engine.
    if your theme has a progress style, `data-dots="<style>"` on those slides; give them the theme's colour with
    `data-accent`.
    Add what the deck solved in a new way to [`RECIPES.md`](../RECIPES.md).
-4. Run `python tools/themes.py`: it checks every theme and regenerates the catalogue below. The same check runs on
-   every pull request.
+4. Run `python tools/themes.py`: it checks every theme and regenerates the catalogue below and `catalogue.js`, which
+   feeds [`demo.html`](demo.html). The same check runs on every pull request. Open `demo.html` and run every one of
+   your names; an effect that needs particular content (a picture, a card) gets it from `preview` in `theme.json`.
 5. Open a pull request. See [CLAUDE.md](../CLAUDE.md#contributing-pull-requests-welcome).
 
 `theme.json`:
@@ -58,9 +63,15 @@ build like the engine.
     "dots": []
   },
   "options": { "data-led-bg": "colour the LED wipes fill the screen with" },
+  "accent": "#ffc47d",
+  "preview": { "my-pop": "<div class=\"card\" data-fx=\"my-pop\"><p class=\"big\">240</p></div>" },
   "demo": "demo/PixelPine-demo/deck.html"
 }
 ```
+
+`accent` (optional) is the theme's colour: the theme demo and the showcase section use it. `preview` (optional) maps
+an effect name to the sample HTML `demo.html` shows it on (paths relative to `themes/`); without it the effect is
+shown on a plain card.
 
 ## Theme API
 

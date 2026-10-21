@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Theme demo stage</title>
+<!-- The stage inside themes/demo.html. demo-stage.html?t=<theme>&k=<kind>&n=<name>[&dir=back] builds slide A (blue) and
+     slide B (orange) for one transition / effect / ambient / dot style, loads every theme from catalogue.js and the
+     engine, then plays it once. Effects use the sample HTML from the theme's "preview" in theme.json, else the
+     defaults below. Nothing here needs editing for a new theme: run python tools/themes.py. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="../engine.css">
+<script src="catalogue.js"></script>
+<style>
+  #se-hint { display: none !important; }
+  section { font-family: Inter, Arial, sans-serif; padding: 96px 128px; gap: 40px; justify-content: center; align-items: center; color: #fff; text-align: center; }
+  section.a { background: #2f5d8a; }
+  section.b { background: #c2603d; }
+  .letter { font-size: 360px; font-weight: 700; line-height: 1; opacity: .92; }
+  .tag { font-size: 32px; font-weight: 600; opacity: .8; }
+  h2 { font-size: 64px; margin: 0; }
+  p { font-size: 40px; margin: 0; }
+  .big { font-size: 64px; font-weight: 700; }
+  .card { display: flex; flex-direction: column; gap: 12px; background: #fff; color: #1d2229; border-radius: 24px; padding: 40px 56px; min-width: 520px; }
+  .card .big { color: #c2603d; }
+  table { font-size: 40px; border-collapse: collapse; }
+  td { padding: 10px 28px; border-bottom: 2px solid rgba(255, 255, 255, .35); text-align: left; }
+  ul { font-size: 40px; text-align: left; }
+</style>
+</head>
+<body>
+<script>
+(() => {
+  const q = new URLSearchParams(location.search), cat = window.SE_CATALOGUE;
+  const theme = q.get('t') || 'core', kind = q.get('k') || 'transitions', name = q.get('n') || 'cube-y', back = q.get('dir') === 'back';
+  const th = cat.themes.find(t => t.name === theme), body = document.body;
+  Object.assign(body.dataset, { lang: 'en', timer: 'off', wheel: 'off', dots: kind === 'dots' ? name : 'off' });
+  if (th && th.accent) body.dataset.accent = th.accent;
+
+  const box = fx => `<svg data-fx="${fx}" width="440" height="470" viewBox="0 0 560 600" aria-label="A box"><polygon points="280,60 500,180 280,300 60,180" fill="#f4f5f7"/><polygon points="60,180 280,300 280,560 60,440" fill="#c9d3dd"/><polygon points="500,180 280,300 280,560 500,440" fill="#9fb3c8"/></svg>`;
+  const CORE = {                            // sample content for the core's element effects
+    letters: '<h2 data-fx="letters" style="font-size:96px">Letter by letter</h2>',
+    rise: '<p data-fx="rise">This line rises and un-blurs</p>',
+    fade: '<p data-fx="fade">This line fades in</p>',
+    pop: '<p class="big" data-fx="pop" style="font-size:96px">Pop!</p>',
+    flip: '<div class="card" data-fx="flip"><p class="big">A card</p><p>swings in</p></div>',
+    rows: '<table data-fx="rows"><tr><td>First row</td><td>3,83 €</td></tr><tr><td>Second row</td><td>2,70 €</td></tr><tr><td>Third row</td><td>0,27 €</td></tr></table>',
+    list: '<ul data-fx="list"><li>First item</li><li>Second item</li><li>Third item</li></ul>',
+    count: '<p class="big" data-fx="count" style="font-size:128px">1 240</p>',
+    power: box('power'), tilt: box('tilt'), spin3d: box('spin3d'), scan: box('scan'), radial: box('radial')
+  };
+  const sample = (th && th.preview && th.preview[name]) || CORE[name] || `<div class="card" data-fx="${name}"><p class="big">240</p><p>${name}</p></div>`;
+  const letter = l => `<div class="letter" data-fx="none">${l}</div>`;
+  const sec = (cls, inner, attrs = '') => `<section class="${cls}" ${attrs}>${inner}<aside>${cls.toUpperCase()}</aside></section>`;
+  let html;
+  if (kind === 'transitions') html = sec('a', letter('A')) + sec('b', letter('B'), `data-enter="${name}"`);
+  else if (kind === 'effects') html = sec('a', letter('A')) + sec('b', `<p class="tag" data-fx="none">data-fx="${name}"</p>${sample}`, 'data-enter="fade"');
+  else if (kind === 'ambients') html = sec('a', letter('A')) + sec('b', letter('B'), `data-enter="fade" data-ambient="${name}"`);
+  else html = ['a', 'b', 'a', 'b', 'a'].map((c, i) => sec(c, letter(c.toUpperCase() + (i + 1)), 'data-enter="fade"')).join('');
+  body.insertAdjacentHTML('beforeend', html);
+  if (back) history.replaceState(null, '', '#2');
+
+  // every theme, then the engine, in this order (async = false keeps the order)
+  const add = src => { const s = document.createElement('script'); s.src = src; s.async = false; body.appendChild(s); };
+  cat.themes.forEach(t => add(t.name + '/theme.js'));
+  add('../engine.js');
+
+  // play it once the deck is up
+  const wait = () => window.slideEngine ? setTimeout(play, 700) : setTimeout(wait, 50);
+  function play() {
+    const se = window.slideEngine;
+    if (kind === 'dots') { [1, 2, 3, 4].forEach((n, i) => setTimeout(() => se.go(n), i * 1400)); return; }
+    se.go(back ? 0 : 1);
+  }
+  wait();
+})();
+</script>
+</body>
+</html>

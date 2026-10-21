@@ -3,15 +3,29 @@
   "title": "PixelPine (LED tree)",
   "description": "Glowing LED matrix wipes and a twinkling LED background, from the PixelPine Christmas tree talk.",
   "author": "machmar (made with Claude)",
-  "tags": ["electronics", "glow", "led"],
+  "tags": [
+    "electronics",
+    "glow",
+    "led"
+  ],
   "provides": {
-    "transitions": ["led-diagonal", "led-radial", "led-rain", "led-spiral"],
+    "transitions": [
+      "led-diagonal",
+      "led-radial",
+      "led-rain",
+      "led-spiral"
+    ],
     "effects": [],
-    "ambients": ["leds"],
-    "dots": ["led-dots"]
+    "ambients": [
+      "leds"
+    ],
+    "dots": [
+      "led-dots"
+    ]
   },
   "options": {
     "data-led-bg": "colour the LED wipes fill the screen with (default #0b130f)"
   },
-  "demo": "demo/PixelPine-demo/deck.html"
+  "demo": "demo/PixelPine-demo/deck.html",
+  "accent": "#ffc47d"
 }

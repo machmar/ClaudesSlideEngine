@@ -16,4 +16,5 @@
 - [ ] every demo deck stepped through, no console errors
 - [ ] docs updated (README, theme README, help table in engine.js if a key was added)
 - [ ] new theme: its section appended at the end of the showcase (info slides stay first)
+- [ ] new theme: every name runs in themes/demo.html (`preview` in theme.json for effects that need content)
 - [ ] new solutions for kinds of slides added to RECIPES.md

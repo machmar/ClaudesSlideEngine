@@ -53,6 +53,7 @@ scroll wheel, speaker notes and a talk timer. The core is neutral; **[themes](th
 |---|---|
 | `engine.js`, `engine.css` | The engine (neutral core). Link both from a deck. |
 | [`themes/`](themes/README.md) | Themes, one folder each, and the catalogue of every transition and effect by theme, kind and tag. |
+| [`themes/demo.html`](https://machmar.github.io/ClaudesSlideEngine/themes/demo.html) | Theme demo: pick any transition, effect, background or progress style and run it between slide A and slide B. |
 | `build.py` | Packs a deck into one self-contained HTML file (Python 3, standard library only). |
 | [`CLAUDE.md`](CLAUDE.md) | Instructions for Claude: how to make or convert a presentation, how to change the engine. |
 | [`PRESENTATION-STYLE.md`](PRESENTATION-STYLE.md) | The default look and tone of a deck (sizes, colours, structure). |

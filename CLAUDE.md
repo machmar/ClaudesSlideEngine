@@ -30,7 +30,8 @@ prepare a pull request to https://github.com/machmar/ClaudesSlideEngine (see Con
    wagons and a tunnel; an LED tree got LED wipes. Give it at least one transition or effect that only makes sense for
    this subject, plus its colours as options. Check the catalogue in `themes/README.md` first and link existing themes
    for what already fits; mixing is fine and names never clash. Keep the theme generic (no slide text in it) so other
-   decks can use it, and run `python tools/themes.py`.
+   decks can use it, and run `python tools/themes.py`. Check every name of it in `themes/demo.html` (it lists the new
+   theme by itself; give effects that need particular content a `preview` in `theme.json`).
    **When the deck is done, decide whether to submit the theme:** if it adds something the catalogue doesn't have (a
    new kind of transition, effect or background, not just new colours), offer the user to send it upstream as a pull
    request, with the deck as `demo/<Name>-demo/` and a section in the showcase (see Contributing). If it is too close
