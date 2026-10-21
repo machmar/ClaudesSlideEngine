@@ -3,7 +3,7 @@
 'use strict';
 const body = document.body;
 const W = +body.dataset.width || 1920, H = +body.dataset.height || 1080;
-const ACCENT = body.dataset.accent || '#9fb3c8';      // neutral by default; a deck or theme sets its own
+const ACCENT0 = body.dataset.accent || '#9fb3c8';     // neutral by default; a deck sets its own, a slide can override it
 const LANG = body.dataset.lang || 'en';
 const CYCLE = (body.dataset.transitions || 'cube-y,iris,blinds,dissolve,zoom,vortex,cube-x,fade')
   .split(',').map(s => s.trim()).filter(Boolean);
@@ -11,15 +11,25 @@ const ease = { io: 'cubic-bezier(.65,0,.35,1)', out: 'cubic-bezier(.16,1,.3,1)',
 const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
 const sstep = t => t * t * (3 - 2 * t);
 
-/* ---------- colours from the accent ---------- */
-const rgb = (() => { const h = ACCENT.replace('#', ''); const f = h.length === 3 ? h.split('').map(c => c + c).join('') : h; return [0, 2, 4].map(i => parseInt(f.substr(i, 2), 16)); })();
+/* ---------- colours from the accent ----------
+   data-accent on <body> is the deck's accent; data-accent on a slide overrides it while that slide is shown (a theme's
+   section of a deck can bring its colour). setAccent() updates the CSS variables, rgb (in place) and the glow sprite. */
+const rgb = [0, 0, 0];
 const mix = (c, t) => c.map(v => Math.round(v + (255 - v) * t));
 const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
-const LIGHT = mix(rgb, .55);
 const root = document.documentElement.style;
-root.setProperty('--se-accent', ACCENT);
-root.setProperty('--se-accent-light', rgba(LIGHT, 1));
-[35, 45, 50, 60, 75, 90].forEach(a => root.setProperty(`--se-accent-a${a}`, rgba(rgb, a / 100)));
+let ACCENT = null;
+function setAccent(hex) {
+  if (hex === ACCENT) return;
+  ACCENT = hex;
+  const h = hex.replace('#', ''), f = h.length === 3 ? h.split('').map(c => c + c).join('') : h;
+  [0, 2, 4].forEach((i, k) => rgb[k] = parseInt(f.substr(i, 2), 16));
+  root.setProperty('--se-accent', hex);
+  root.setProperty('--se-accent-light', rgba(mix(rgb, .55), 1));
+  [35, 45, 50, 60, 75, 90].forEach(a => root.setProperty(`--se-accent-a${a}`, rgba(rgb, a / 100)));
+  drawSprite();                                   // first called after the sprite exists (below)
+}
+const accentOf = s => (s && s.dataset.accent) || ACCENT0;
 
 /* ---------- build the stage from the <section> elements ---------- */
 const stage = document.createElement('div'); stage.id = 'se-stage';
@@ -90,14 +100,15 @@ function fit() {
 }
 addEventListener('resize', fit); fit();
 
-/* ---------- glow sprite in the accent colour (iris ring, themes' lights) ---------- */
-const sprite = (() => {
-  const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
-  const r = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+/* ---------- glow sprite in the accent colour (themes' lights); redrawn in place when the accent changes ---------- */
+const sprite = document.createElement('canvas'); sprite.width = sprite.height = 64;
+function drawSprite() {
+  const g = sprite.getContext('2d'), r = g.createRadialGradient(32, 32, 0, 32, 32, 32);
   r.addColorStop(0, rgba(mix(rgb, .9), 1)); r.addColorStop(.18, rgba(mix(rgb, .4), .95));
   r.addColorStop(.45, rgba(rgb, .35)); r.addColorStop(1, rgba(rgb, 0));
-  g.fillStyle = r; g.fillRect(0, 0, 64, 64); return c;
-})();
+  g.clearRect(0, 0, 64, 64); g.fillStyle = r; g.fillRect(0, 0, 64, 64);
+}
+setAccent(ACCENT0);
 
 /* ---------- registries: the core fills them below, theme files (themes/<name>/theme.js) add to them ---------- */
 const T = {}, BUILDS = {}, AMBIENTS = {}, DOTSTYLES = {};
@@ -206,7 +217,6 @@ function addCellCounts(table, items) {        // right-aligned number cells coun
   });
 }
 
-const GLOW = rgba(rgb, .95);
 /* keyframes sampled from a motion function of time (ms), so that helpers can follow the same path exactly */
 const sampled = (T, fn, n = 40) => Array.from({ length: n + 1 }, (_, i) => Object.assign({ offset: i / n }, fn(T * i / n)));
 /* where an element sits on its slide (canvas px), measured before any build moves it; measure "text" adds the box of
@@ -229,7 +239,7 @@ function makeBuild(item, delay, out) {
       const cs = el.querySelectorAll('.se-c'), big = parseFloat(getComputedStyle(el).fontSize) > 100;
       cs.forEach((c, i) => out.push(c.animate([
         { opacity: 0, transform: 'translateY(.7em) rotateX(-100deg) scale(.6)', filter: 'blur(8px)', textShadow: '0 0 0 transparent' },
-        { opacity: 1, transform: 'translateY(-.08em) rotateX(10deg) scale(1.08)', filter: 'blur(0)', textShadow: `0 0 34px ${GLOW}`, offset: .6 },
+        { opacity: 1, transform: 'translateY(-.08em) rotateX(10deg) scale(1.08)', filter: 'blur(0)', textShadow: `0 0 34px ${rgba(rgb, .95)}`, offset: .6 },
         { opacity: 1, transform: 'none', filter: 'blur(0)', textShadow: '0 0 0 transparent' }
       ], { duration: big ? 1100 : 800, delay: delay + i * (big ? 70 : 22), easing: ease.out, fill: 'both' })));
       break;
@@ -474,7 +484,8 @@ T.none = async (from, to, dir, reveal) => { layer(to, 2); reveal(); };
 const CORE_FX = ['letters', 'rise', 'fade', 'pop', 'flip', 'rows', 'list', 'power', 'tilt', 'spin3d', 'scan', 'radial', 'count', 'none'];
 const THEMES = [];
 const themeAPI = {
-  W, H, body, stage, fx, fctx, sprite, ACCENT, rgb, ease,
+  W, H, body, stage, fx, fctx, sprite, rgb, ease,
+  get ACCENT() { return ACCENT; },                       // the accent now (it follows the current slide)
   get simple() { return simple; },                       // M key: plain, short transitions
   clamp, sstep, rgba, mix, A, layer, rafLoop, finished, focusOf, centerOf, helper, sampled, splitLetters, countTargets,
   css(text) { const st = document.createElement('style'); st.textContent = text; document.head.appendChild(st); },
@@ -544,13 +555,15 @@ async function go(n, forceDir) {
   const from = slides[cur], to = slides[n], dir = forceDir || (n > cur ? 1 : -1);
   const name = simple ? 'fade' : (dir > 0 ? to : from).dataset.enter;
   to.classList.add('se-on'); to.style.zIndex = 0;        // laid out for measuring, but underneath
-  swapped(from, to, dir); prime(to); media(to, true);
+  setAccent(accentOf(to)); swapped(from, to, dir); prime(to); media(to, true);   // builds glow in the new slide's accent
+  setAccent(accentOf(dir > 0 ? to : from));        // the transition in the accent of the slide it belongs to
   let revealed = false; const reveal = () => { if (!revealed) { revealed = true; playBuilds(to); } };
   try { await (T[name] || T.fade)(from, to, dir, reveal); } catch (e) { console.error(e); }
   reveal();
   running.forEach(a => { try { a.cancel(); } catch (e) {} }); running = [];
   from.classList.remove('se-on'); media(from, false); resetBuilds(from);
   slides.forEach(cleanup); to.classList.add('se-on'); to.style.zIndex = 2;
+  setAccent(accentOf(to));
   fctx.clearRect(0, 0, W, H);
   seen.add(cur); cur = n; chrome();
   busy = false; skipFx = false;
@@ -665,6 +678,7 @@ async function closeOverview(n) {
     swapped(from, to, n > cur ? 1 : -1);
     from.classList.remove('se-on'); media(from, false); resetBuilds(from); from.style.zIndex = '';
     to.classList.add('se-on'); to.style.zIndex = 2; media(to, true);
+    setAccent(accentOf(to));
     seen.add(cur); cur = n; chrome();
   } else slides[cur].querySelectorAll('video').forEach(v => v.play().catch(() => {}));
   ovEl.classList.remove('show'); th.style.zIndex = '';
@@ -753,7 +767,7 @@ setTimeout(() => hint.style.opacity = 0, 5000);
 cur = clamp((parseInt(location.hash.slice(1), 10) || 1) - 1, 0, slides.length - 1);
 (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => {
   const s = slides[cur]; if (!s) return;
-  s.classList.add('se-on'); s.style.zIndex = 2;
+  s.classList.add('se-on'); s.style.zIndex = 2; setAccent(accentOf(s));
   s.dispatchEvent(new CustomEvent('se:enter', { detail: { dir: 1 } }));
   prime(s); media(s, true); chrome();
   setTimeout(() => playBuilds(s), 300);

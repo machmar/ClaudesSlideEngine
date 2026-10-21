@@ -35,7 +35,8 @@ build like the engine.
    `demo/showcase/deck.html`. The showcase keeps every info slide first (neutral core only), then one section per
    theme in the order they were added; yours starts with a dark divider slide (kicker `Theme: <name>`, your ambient
    if you have one), then one short slide per transition and effect, styled with your theme's look via a class and,
-   if your theme has a progress style, `data-dots="<style>"` on those slides.
+   if your theme has a progress style, `data-dots="<style>"` on those slides; give them the theme's colour with
+   `data-accent`.
    Add what the deck solved in a new way to [`RECIPES.md`](../RECIPES.md).
 4. Run `python tools/themes.py`: it checks every theme and regenerates the catalogue below. The same check runs on
    every pull request.
@@ -84,7 +85,9 @@ build like the engine.
 | `se.css(text)` | adds a stylesheet | |
 
 **Helpers on `se`**: `W`, `H` (canvas size), `body`, `stage`, `fx` / `fctx` (a full-stage canvas above the slides and its
-2D context, for transitions to draw on; clear it when done), `sprite` (a glow dot in the accent colour), `ACCENT`, `rgb`,
+2D context, for transitions to draw on; clear it when done), `sprite` (a glow dot in the accent colour, redrawn in
+place when a slide changes the accent), `ACCENT`, `rgb` (both follow the current slide's accent; read them when drawing,
+not once in `setup`),
 `ease` (`io`, `out`, `in`), `simple`, `clamp`, `sstep`, `rgba`, `mix`, `A` (a tracked animation for transitions; a key
 press mid-transition finishes it), `layer(slide, z)`, `rafLoop(ms, p => …)`, `finished(anim)`, `focusOf(slide)`,
 `centerOf(el)`, `helper(cls, html, style)`, `sampled(ms, t => keyframe, n)`, `splitLetters(el)`, `countTargets(el)`.
