@@ -24,10 +24,6 @@
   a { color: var(--accent); }
   kbd { font: 700 14px Consolas, monospace; border: 1px solid var(--line); border-bottom-width: 3px; border-radius: 6px; padding: 1px 6px; color: var(--fg); }
 
-  /* "For Claude": copies the starting prompt */
-  .claude { background: var(--card); border: 2px solid var(--accent); border-radius: 18px; padding: 24px 26px; margin: 0 0 36px; }
-  .claude h2 { font-size: 22px; margin: 0 0 6px; }
-  .claude [data-for-claude] { margin-top: 14px; }
 </style>
 </head>
 <body>
@@ -38,12 +34,7 @@
     switch on, a slide overview on the mouse wheel, speaker notes and a talk timer. Themes add a look on top (LED wipes,
     …) and mix freely: <a href="https://github.com/machmar/ClaudesSlideEngine/tree/main/themes">see the catalogue</a>.</p>
 
-  <section class="claude" aria-labelledby="fc">
-    <h2 id="fc">Get a presentation made</h2>
-    <p>Copy this prompt into Claude (Claude Code, or any Claude that can read GitHub and write files), then finish its
-      last line with what your talk is about.</p>
-    <div data-for-claude></div>
-  </section>
+  <div data-for-claude></div>
 
   <div class="cards">
     <a class="card" href="demo/showcase/deck.html"><b>Showcase →</b><span>The neutral core and the controls, then a section for each theme.</span></a>

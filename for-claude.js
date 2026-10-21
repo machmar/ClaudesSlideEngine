@@ -1,4 +1,4 @@
-/* "For Claude" button for the web pages (index.html, themes/demo.html): copies the starting prompt for Claude.
+/* "For Claude" button for the start page (index.html): a small button that copies the starting prompt for Claude.
    Put <div data-for-claude></div> where the button should go and load this script. The prompt below is the one
    copy for the web pages; README.md ("Prompt for Claude") has the same text: change both together. */
 (() => {
@@ -17,14 +17,13 @@ The presentation is about: `;
 
   const css = document.createElement('style');
   css.textContent = `
-.fc-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
-.fc-btn { font: 700 16px Inter, Arial, sans-serif; color: var(--bg, #16191e); background: var(--accent, #9fb3c8); border: 0; border-radius: 12px;
-  padding: 11px 20px; cursor: pointer; }
-.fc-btn:hover { filter: brightness(1.1); }
-.fc-btn:focus-visible { outline: 3px solid var(--fg, #eef0f3); outline-offset: 2px; }
-.fc-done { color: var(--ok, #8fd19e); font-weight: 600; }
-.fc-details { margin-top: 10px; }
-.fc-details summary { cursor: pointer; color: var(--muted, #a9b2bd); }
+.fc-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 0 0 16px; }
+.fc-btn { font: 600 14px Inter, Arial, sans-serif; color: var(--fg, #eef0f3); background: transparent; border: 1px solid var(--line, #343b45);
+  border-radius: 8px; padding: 5px 12px; cursor: pointer; }
+.fc-btn:hover { border-color: var(--accent, #9fb3c8); }
+.fc-btn:focus-visible { outline: 2px solid var(--fg, #eef0f3); outline-offset: 2px; }
+.fc-done { color: var(--muted, #a9b2bd); font-size: 14px; }
+.fc-prompt[hidden] { display: none; }
 .fc-prompt { white-space: pre-wrap; font: 14px/1.55 Consolas, 'Courier New', monospace; color: var(--fg, #eef0f3); background: var(--bg, #16191e);
   border: 1px solid var(--line, #343b45); border-radius: 12px; padding: 16px 18px; margin: 10px 0 0; overflow-x: auto; }`;
   document.head.appendChild(css);
@@ -38,15 +37,14 @@ The presentation is about: `;
     }
   }
   document.querySelectorAll('[data-for-claude]').forEach(box => {
-    box.innerHTML = `<div class="fc-row"><button type="button" class="fc-btn">For Claude: copy the prompt</button>
-      <span class="fc-done" role="status" aria-live="polite"></span></div>
-      <details class="fc-details"><summary>Show the prompt</summary><pre class="fc-prompt"></pre></details>`;
+    box.innerHTML = `<div class="fc-row"><button type="button" class="fc-btn" title="Copies a prompt that tells Claude how to make a presentation with this engine">For Claude: copy prompt</button>
+      <span class="fc-done" role="status" aria-live="polite"></span></div><pre class="fc-prompt" hidden></pre>`;
     box.querySelector('.fc-prompt').textContent = PROMPT;
     const done = box.querySelector('.fc-done');
     box.querySelector('.fc-btn').addEventListener('click', async () => {
       const ok = await copy(PROMPT);
-      done.textContent = ok ? 'Copied. Paste it into Claude and finish the last line.' : 'Copy failed: open "Show the prompt" and copy it by hand.';
-      if (!ok) box.querySelector('details').open = true;
+      done.textContent = ok ? 'Copied: paste it into Claude and finish the last line.' : 'Copy failed: copy the prompt below by hand.';
+      if (!ok) box.querySelector('.fc-prompt').hidden = false;
     });
   });
   window.slideEnginePrompt = PROMPT;

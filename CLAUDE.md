@@ -172,8 +172,8 @@ Only open a pull request when the user asks for it or agrees to it; it is publis
   effect, styled with the theme's own look through a class on those slides, with its colour through `data-accent`
   and its progress style (if it has one) through `data-dots` on them.
 - `RECIPES.md` is kept up to date by every deck that solves something new.
-- The starting prompt for users exists twice: in `for-claude.js` (the "For Claude" button on the start page and the
-  theme demo; add `<div data-for-claude>` + the script to put it on another page) and in `README.md` ("Prompt for
-  Claude"). Change both together when the workflow changes.
+- The starting prompt for users exists twice: in `for-claude.js` (the small "For Claude" button on the start page,
+  rendered into `<div data-for-claude>`) and in `README.md` ("Prompt for Claude"). Change both together when the
+  workflow changes.
 - Don't commit built single-file decks (`*.html` outputs of `build.py` are tens of MB). `talks/` is git-ignored.
 - `HANDOVER.md`, if present, is the author's local session notes and is not part of the repo.
