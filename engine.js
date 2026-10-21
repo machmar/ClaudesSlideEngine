@@ -495,7 +495,8 @@ startAmbients();
     if (s.dataset.ambient && !AMBIENTS[s.dataset.ambient]) note(`data-ambient="${s.dataset.ambient}"`, i);
     s.querySelectorAll('[data-fx]').forEach(el => { const f = el.dataset.fx; if (!CORE_FX.includes(f) && !BUILDS[f]) note(`data-fx="${f}"`, i); });
   });
-  const d = body.dataset.dots; if (d && d !== 'on' && d !== 'off' && !DOTSTYLES[d]) miss.set(`data-dots="${d}"`, new Set());
+  [body, ...slides].forEach((s, i) => { const d = s.dataset.dots; if (d && d !== 'off' && !DOTSTYLES[d]) note(`data-dots="${d}"`, i - 1); });
+  miss.forEach(at => at.delete(0));               // index -1 + 1: the <body>, not a slide
   miss.forEach((at, what) => console.warn(`slide-engine: unknown ${what}${at.size ? ' (slide ' + [...at].join(', ') + ')' : ''}. Is its theme linked before engine.js? See themes/README.md`));
 }
 
@@ -503,13 +504,27 @@ startAmbients();
 slides.forEach((s, i) => { if (!s.dataset.enter || !T[s.dataset.enter]) { s.dataset.enterAuto = ''; s.dataset.enter = CYCLE[(i - 1 + CYCLE.length) % CYCLE.length] || 'fade'; } });
 
 /* ---------- navigation ---------- */
+/* Progress indicator: data-dots="<style>" on <body> sets it for the deck, on a slide for that slide (a theme's section
+   of a deck can bring its own). Core styles: "counter" (default, "3 / 17"), "dots" (plain dots), "off"; themes add
+   more. Switching style clears the element's classes and helpers, then runs the new style's init(). */
 slides.forEach(() => dotsEl.appendChild(document.createElement('i')));
-const dotStyle = DOTSTYLES[body.dataset.dots];      // data-dots="<name>" from a theme restyles the progress dots
-if (dotStyle && dotStyle.init) dotStyle.init(dotsEl, slides.length);
+const countEl = document.createElement('b'); countEl.className = 'se-count'; dotsEl.appendChild(countEl);
+DOTSTYLES.counter = { update(cur) { countEl.textContent = `${cur + 1} / ${slides.length}`; } };
+DOTSTYLES.dots = {};
+let dotStyle = null, dotName = null;
+function setDots(name) {
+  if (!DOTSTYLES[name] && name !== 'off') name = 'counter';
+  if (name === dotName) return;
+  dotName = name; dotsEl.className = ''; dotsEl.dataset.style = name;
+  dotsEl.querySelectorAll('.se-helper').forEach(e => e.remove());
+  dotStyle = DOTSTYLES[name] || null;
+  if (dotStyle && dotStyle.init) dotStyle.init(dotsEl, slides.length);
+}
 const seen = new Set();
 function chrome() {
   dotsEl.querySelectorAll('i').forEach((d, i) => { d.classList.toggle('cur', i === cur); d.classList.toggle('seen', seen.has(i)); });
-  if (dotStyle && dotStyle.update) dotStyle.update(cur, dotsEl);
+  setDots(slides[cur].dataset.dots || body.dataset.dots || 'counter');
+  if (dotStyle && dotStyle.update) dotStyle.update(cur, dotsEl, slides.length);
   notesEl.textContent = NOTES[cur] || '';
   if (!settling) history.replaceState(history.state, '', '#' + (cur + 1));
 }

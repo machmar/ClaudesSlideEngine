@@ -2,7 +2,7 @@
    Transitions led-radial, led-rain, led-spiral, led-diagonal (glowing LEDs cover the screen and
    switch off) · ambient "leds" (a faint moving LED matrix, nice on dark title slides) ·
    data-led-bg="#0b130f" on <body> = the colour the LED wipes fill the screen with, data-led-color = the LED glow
-   (default: the deck's accent). Docs: README.md next to this file.
+   (default: the deck's accent) · data-dots="led-dots": glowing progress dots. Docs: README.md next to this file.
    Link it before engine.js:  <script src="themes/pixelpine/theme.js" defer></script> */
 (window.slideEngineThemes = window.slideEngineThemes || []).push({ name: 'pixelpine', setup(se) {
   const { W, H, fctx, clamp, sstep, layer, rafLoop, focusOf, rgba, mix } = se;
@@ -53,6 +53,14 @@
   }
   se.transition('led-radial', ledWipe('radial')); se.transition('led-rain', ledWipe('rain'));
   se.transition('led-spiral', ledWipe('spiral')); se.transition('led-diagonal', ledWipe('diagonal'));
+
+  /* ---------- data-dots="led-dots": the progress dots glow like LEDs ---------- */
+  se.dots('led-dots', { init(dots) { dots.classList.add('se-led-dots'); } });
+  se.css(`
+#se-dots.se-led-dots i { width: 12px; height: 12px; }
+#se-dots.se-led-dots i.seen { background: var(--se-accent-a45); }
+#se-dots.se-led-dots i.cur { background: var(--se-accent-light); box-shadow: 0 0 10px 3px var(--se-accent-a90), 0 0 26px 8px var(--se-accent-a50); transform: scale(1.35); }
+`);
 
   /* ---------- ambient: a faint LED matrix with a slow wave and twinkles ---------- */
   se.ambient('leds', {

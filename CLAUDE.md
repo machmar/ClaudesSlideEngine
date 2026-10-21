@@ -103,7 +103,8 @@ timeline stands still, so everything looks frozen and screenshots lie.
 4. **Transitions:** registry `T[name] = async (from, to, dir, reveal)`, helpers `A()` (tracked Web Animation),
    `layer()`, `rafLoop()`, `focusOf()`; canvas effects draw on `#se-fx`. Going back plays the leaving slide's
    transition reversed. Slides without `data-enter` get one from the cycle and are marked `data-enter-auto`.
-   Registries `T`, `BUILDS` (theme element effects, run from `makeBuild`'s `default:`), `AMBIENTS`, `DOTSTYLES`.
+   Registries `T`, `BUILDS` (theme element effects, run from `makeBuild`'s `default:`), `AMBIENTS`, `DOTSTYLES`
+   (progress styles; core `counter` and `dots`; `setDots()` switches per slide from `chrome()`).
    Elements made for an effect use `helper()` (class `se-helper`): removed by `resetBuilds`, ignored by plans,
    overview clones and `check-deck.js`. `prime()` measures elements whose effect asks for it (`geoOf()`) and gives
    each a scratch object `el._se`.
@@ -146,7 +147,8 @@ Whatever belongs together. A good PR:
   the end of the showcase: the showcase (`demo/showcase/deck.html`) keeps every info slide first, using only the neutral core; after them comes
   one section per theme, in the order the themes were added. A new theme **appends its section at the end**: a dark
   divider slide (kicker `Theme: <name>`, the theme's ambient if it has one), then one short slide per transition and
-  effect, styled with the theme's own look through a class on those slides;
+  effect, styled with the theme's own look through a class on those slides and with its progress style (if it has
+  one) through `data-dots` on them;
 - adds its new solutions to `RECIPES.md` (one row each, pointing at the demo slide);
 - updates the docs it touches (`README.md`, a theme's README, the help table in `engine.js` if it adds a key);
 - was stepped through with `tools/test-harness.js` on the demo decks, and `tools/check-deck.js` passes on them;
@@ -164,7 +166,8 @@ Only open a pull request when the user asks for it or agrees to it; it is publis
 - Showcase order: the showcase (`demo/showcase/deck.html`) keeps every info slide first, using only the neutral core; after them comes
   one section per theme, in the order the themes were added. A new theme **appends its section at the end**: a dark
   divider slide (kicker `Theme: <name>`, the theme's ambient if it has one), then one short slide per transition and
-  effect, styled with the theme's own look through a class on those slides.
+  effect, styled with the theme's own look through a class on those slides and with its progress style (if it has
+  one) through `data-dots` on them.
 - `RECIPES.md` is kept up to date by every deck that solves something new.
 - Don't commit built single-file decks (`*.html` outputs of `build.py` are tens of MB). `talks/` is git-ignored.
 - `HANDOVER.md`, if present, is the author's local session notes and is not part of the repo.

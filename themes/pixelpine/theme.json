@@ -8,7 +8,7 @@
     "transitions": ["led-diagonal", "led-radial", "led-rain", "led-spiral"],
     "effects": [],
     "ambients": ["leds"],
-    "dots": []
+    "dots": ["led-dots"]
   },
   "options": {
     "data-led-bg": "colour the LED wipes fill the screen with (default #0b130f)",

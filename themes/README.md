@@ -34,7 +34,8 @@ build like the engine.
 3. Show it off: the deck it was made for as `demo/<Name>-demo/` (paths to `../../`), and a section **at the end** of
    `demo/showcase/deck.html`. The showcase keeps every info slide first (neutral core only), then one section per
    theme in the order they were added; yours starts with a dark divider slide (kicker `Theme: <name>`, your ambient
-   if you have one), then one short slide per transition and effect, styled with your theme's look via a class.
+   if you have one), then one short slide per transition and effect, styled with your theme's look via a class and,
+   if your theme has a progress style, `data-dots="<style>"` on those slides.
    Add what the deck solved in a new way to [`RECIPES.md`](../RECIPES.md).
 4. Run `python tools/themes.py`: it checks every theme and regenerates the catalogue below. The same check runs on
    every pull request.
@@ -79,7 +80,7 @@ build like the engine.
 | `se.transition(name, fn)` | `fn(from, to, dir, reveal)` is async: show both slides (`se.layer`), animate, call `reveal()` when the new slide becomes visible (its element builds start then), resolve when done. `dir` is 1 forward, -1 back. Read `se.simple` for the short M-key version. | `data-enter="name"` |
 | `se.build(name, def)` | an element effect. `def.make(item, ctx)` adds animations to `ctx.out` (use `ctx.A(el, keyframes, options)`, which applies `ctx.delay`). `def.measure`: `true` gives `ctx.geo` = the element's box on the slide (`x, y, w, h`), `'text'` adds the box of its text (`tx`, `ty`, `th`). `def.nested`: may sit inside another animated element. `def.count`: its numbers also count up. `el._se` is scratch space for the current build (`el._se.countDelay` holds the count back, ms). | `data-fx="name"` |
 | `se.ambient(name, def)` | a canvas background behind a slide's content. `init(slide, canvas)` returns state; `draw(g, state, t, dt, still)` is called every frame while the slide is shown (`t` seconds, `dt` since the last frame, `still` = one frozen frame for the overview). | `data-ambient="name"` |
-| `se.dots(name, def)` | restyles the progress dots: `init(dotsEl, count)` once, `update(current, dotsEl)` on every slide change. | `data-dots="name"` on `<body>` |
+| `se.dots(name, def)` | a progress indicator style: `init(dotsEl, count)` when it becomes active (add classes and `se.helper()` elements; both are cleared when another style takes over), `update(current, dotsEl, count)` on every slide change. `dotsEl` holds one `<i>` per slide with classes `cur` / `seen`. | `data-dots="name"` on `<body>` or on a slide |
 | `se.css(text)` | adds a stylesheet | |
 
 **Helpers on `se`**: `W`, `H` (canvas size), `body`, `stage`, `fx` / `fctx` (a full-stage canvas above the slides and its
@@ -99,8 +100,8 @@ them when the slide is left, and the overview, the planner and `tools/check-deck
 
 | theme | what it is | adds | tags | demo |
 |---|---|---|---|---|
-| **core** (built into `engine.js`) | neutral: cube turns, iris, blinds, dissolve, zoom, vortex and the automatic element builds | 10 transitions, 13 effects | | [showcase](../demo/showcase/deck.html) |
-| [**pixelpine**](pixelpine/README.md) | Glowing LED matrix wipes and a twinkling LED background, from the PixelPine Christmas tree talk. | 4 transitions, 1 ambient | electronics, glow, led | [PixelPine-demo](../demo/PixelPine-demo/deck.html) |
+| **core** (built into `engine.js`) | neutral: cube turns, iris, blinds, dissolve, zoom, vortex and the automatic element builds | 10 transitions, 13 effects, 2 dot styles | | [showcase](../demo/showcase/deck.html) |
+| [**pixelpine**](pixelpine/README.md) | Glowing LED matrix wipes and a twinkling LED background, from the PixelPine Christmas tree talk. | 4 transitions, 1 ambient, 1 dot style | electronics, glow, led | [PixelPine-demo](../demo/PixelPine-demo/deck.html) |
 | [**train**](train/README.md) | A toy steam loco pulls slides away as wagons, steam clouds, a tunnel, level-crossing barriers, cards on wheels. | 5 transitions, 4 effects, 1 ambient, 1 dot style | playful, steam, transport | [Nudgy-demo](../demo/Nudgy-demo/deck.html) |
 
 ### Transitions (`data-enter`), A–Z
@@ -160,6 +161,9 @@ them when the slide is left, and the overview, the planner and `tools/check-deck
 
 | name | theme |
 |---|---|
+| `counter` | core |
+| `dots` | core |
+| `led-dots` | [pixelpine](pixelpine/README.md) |
 | `track` | [train](train/README.md) |
 
 ### By tag

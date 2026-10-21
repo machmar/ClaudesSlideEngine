@@ -25,7 +25,7 @@ simulator, so online they stay on their "connecting" screen) and the train slide
 | `puff` | effect | big text or a number appears out of a puff of steam and counts up; inside a `wagon` card it waits until the card has arrived |
 | `depart` | effect | for a picture of a loco: it backs in from the right, and every 14 s drives off and backs in again, with steam from `data-chimney="x,y"` (the chimney as fractions of the picture, default `.7,.2`) |
 | `trains` | ambient | little steam trains drive along two tracks at the bottom of the slide |
-| `track` | dots | `data-dots="track"` on `<body>`: the progress dots become a rail with a stop per slide and a small loco at the current one |
+| `track` | dots | `data-dots="track"` on `<body>` (or on the slides of a section): the progress dots become a rail with a stop per slide and a small loco at the current one |
 
 Options on `<body>`: `data-train="body,chassis,wheels"`, the loco and wagon colours (default
 `#c8402a,#2a5aa0,#1e1e22`).

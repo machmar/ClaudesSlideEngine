@@ -408,8 +408,14 @@
   /* ---------- data-dots="track": a rail with a stop per slide and a small loco at the current one ---------- */
   let mini = null, miniAt = null;
   se.dots('track', {
-    init(dots) { mini = helper('se-mini', locoSVG()); dots.classList.add('se-track'); dots.appendChild(mini); },
-    update(cur) { if (miniAt !== null && cur !== miniAt) mini.classList.toggle('back', cur < miniAt); miniAt = cur; mini.style.left = (cur * 44 + 22 - 26) + 'px'; }
+    init(dots) { mini = helper('se-mini', locoSVG()); miniAt = null; dots.classList.add('se-track'); dots.appendChild(mini); },
+    update(cur) {
+      const first = miniAt === null;                    // switched on mid-deck: start at the current stop, no drive in
+      if (!first && cur !== miniAt) mini.classList.toggle('back', cur < miniAt);
+      miniAt = cur; if (first) mini.style.transition = 'none';
+      mini.style.left = (cur * 44 + 22 - 26) + 'px';
+      if (first) { mini.offsetWidth; mini.style.transition = ''; }
+    }
   });
 
   se.css(`
