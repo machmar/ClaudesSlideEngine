@@ -5,7 +5,7 @@ you write a deck of plain HTML `<section>` slides, the engine animates it, `buil
 Read this file, then follow it. Reference for every attribute and effect: `README.md`. Default look and tone:
 `PRESENTATION-STYLE.md`. Themes and the catalogue of every effect: `themes/README.md`. Worked examples:
 `demo/showcase/deck.html` (shared CSS classes, English) and `demo/PixelPine-demo/deck.html` (inline styles, Czech,
-pictures and video clips).
+pictures and video clips). How each kind of slide was solved before: `RECIPES.md`.
 
 **Pull requests are highly welcome** (new themes, transitions, element effects, controls, fixes, anything). If you
 make a theme or improve the engine while making someone's deck, tell the user it could go upstream and offer to
@@ -19,15 +19,22 @@ prepare a pull request to https://github.com/machmar/ClaudesSlideEngine (see Con
    `<their project>/presentation/`, otherwise `talks/<name>/` in this repo (git-ignored).
 2. **Outline first.** One line per slide (title + what it shows + which picture). For a talk longer than ~5 slides,
    show the outline to the user and wait for an OK before writing slides. Follow `PRESENTATION-STYLE.md`: one idea
-   per slide, headline numbers big, details in the notes.
+   per slide, headline numbers big, details in the notes. **Look up each kind of content in `RECIPES.md`** (KPIs,
+   cost tables, schematics, clips, …) and reuse the solution instead of inventing a new one.
 3. **Collect real material.** Pictures into `presentation/media/` (PNG/JPG), clips into `presentation/video/`
    (MP4, H.264, small: 640–1280 px wide, a few MB). Use renders, screenshots, schematic crops, photos and charts from
    the user's project. **Never invent images, numbers, quotes or statistics.** If something is missing, leave it out
    or ask. You may draw simple diagrams as inline `<svg>`.
-4. **Pick themes.** The core is neutral. Read the catalogue in `themes/README.md` and pick what fits the topic (an
-   electronics project might use the LED wipes of `pixelpine`, a vehicle the `train` theme); mixing several themes is
-   fine, names never clash. If nothing fits and the user wants a distinct look, write a new theme in `themes/<name>/`
-   following `themes/README.md` (run `python tools/themes.py`), and offer to send it upstream afterwards.
+4. **Make a theme for this presentation.** The core is neutral, and every new presentation should get **its own
+   theme** in `themes/<name>/` (`themes/README.md` says how), built from the project's subject: a toy train got steam,
+   wagons and a tunnel; an LED tree got LED wipes. Give it at least one transition or effect that only makes sense for
+   this subject, plus its colours as options. Check the catalogue in `themes/README.md` first and link existing themes
+   for what already fits; mixing is fine and names never clash. Keep the theme generic (no slide text in it) so other
+   decks can use it, and run `python tools/themes.py`.
+   **When the deck is done, decide whether to submit the theme:** if it adds something the catalogue doesn't have (a
+   new kind of transition, effect or background, not just new colours), offer the user to send it upstream as a pull
+   request, with the deck as `demo/<Name>-demo/` and a section in the showcase (see Contributing). If it is too close
+   to an existing theme, fold the improvements into that theme instead, or keep it local.
 5. **Write `deck.html`.** Start from a copy of a demo deck and fix the relative paths to `engine.css`, `engine.js`
    and the themes (theme scripts go **before** `engine.js`). Rules:
    - one `<section>` per slide, laid out with normal CSS on a 1920 × 1080 canvas (flex column by default);
@@ -45,6 +52,9 @@ prepare a pull request to https://github.com/machmar/ClaudesSlideEngine (see Con
    clips; Google Fonts stay links). Rebuild after every change to the deck.
 8. **Hand over:** the path of the built file, the slide list, anything you left out and why. Mention F (full
    screen), N (notes), the wheel overview and H (all controls).
+9. **Update `RECIPES.md`:** add a row for every kind of content you solved in a new way (a layout, an interaction, a
+   trick for a kind of information), with the deck and slide, and improve rows you found a better way for. If the
+   deck goes upstream as a demo, these rows go into the same pull request.
 
 ## Converting an existing presentation
 
@@ -132,8 +142,12 @@ Whatever belongs together. A good PR:
 
 - keeps the engine dependency-free and puts new looks into a theme (`themes/<name>/`, see `themes/README.md`);
 - passes `python tools/themes.py --check` (it also runs automatically on every PR);
-- shows the new thing live: a demo deck in `demo/<Name>-demo/` (paths to `../../`) and/or slides in
-  `demo/showcase/deck.html`;
+- shows the new thing live: a demo deck in `demo/<Name>-demo/` (paths to `../../`), and for a new theme a section at
+  the end of the showcase: the showcase (`demo/showcase/deck.html`) keeps every info slide first, using only the neutral core; after them comes
+  one section per theme, in the order the themes were added. A new theme **appends its section at the end**: a dark
+  divider slide (kicker `Theme: <name>`, the theme's ambient if it has one), then one short slide per transition and
+  effect, styled with the theme's own look through a class on those slides;
+- adds its new solutions to `RECIPES.md` (one row each, pointing at the demo slide);
 - updates the docs it touches (`README.md`, a theme's README, the help table in `engine.js` if it adds a key);
 - was stepped through with `tools/test-harness.js` on the demo decks, and `tools/check-deck.js` passes on them;
 - says in the description what it adds and how it was tested (browser and version); the PR template asks for this.
@@ -147,5 +161,10 @@ Only open a pull request when the user asks for it or agrees to it; it is publis
 - MIT licensed. No build step for the engine itself, no npm, no frameworks.
 - Themes in `themes/<name>/` (theme.js, theme.json, README.md); demo decks in `demo/<Name>-demo/`, linking the engine
   and themes at `../../`.
+- Showcase order: the showcase (`demo/showcase/deck.html`) keeps every info slide first, using only the neutral core; after them comes
+  one section per theme, in the order the themes were added. A new theme **appends its section at the end**: a dark
+  divider slide (kicker `Theme: <name>`, the theme's ambient if it has one), then one short slide per transition and
+  effect, styled with the theme's own look through a class on those slides.
+- `RECIPES.md` is kept up to date by every deck that solves something new.
 - Don't commit built single-file decks (`*.html` outputs of `build.py` are tens of MB). `talks/` is git-ignored.
 - `HANDOVER.md`, if present, is the author's local session notes and is not part of the repo.

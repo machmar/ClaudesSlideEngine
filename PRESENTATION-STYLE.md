@@ -30,7 +30,9 @@ rounds of changes. Workflow: `CLAUDE.md`; technical reference: `README.md`; work
 - Light, warm background for content slides (`#F5F0E6`, dark text `#16271F`), dark slides only for title and
   closing (`#13221B` + an ambient background from a theme, e.g. `data-ambient="leds"` from pixelpine), one
   accent-coloured statement slide (e.g. prices on `#FFC47D`).
-- Pick themes that fit the project (`themes/README.md`); several at once is fine. With no theme the core look is neutral.
+- Every deck gets its own theme built from the project's subject (CLAUDE.md, step 4), mixed with existing themes
+  where they fit. With no theme the core look is neutral.
+- Before designing a slide, check `RECIPES.md` for how that kind of content was shown before.
 - Fonts: Fredoka for headings, Nunito Sans for text (or a pair that fits the project).
 - Accent colour = the project's own colour if it has one (`data-accent`).
 

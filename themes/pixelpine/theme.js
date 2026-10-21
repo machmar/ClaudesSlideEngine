@@ -1,11 +1,22 @@
 /* PixelPine theme for Claude's Slide Engine: the LED look of the PixelPine Christmas tree talk.
-   Transitions led-radial, led-rain, led-spiral, led-diagonal (glowing LEDs in the accent colour cover the screen and
+   Transitions led-radial, led-rain, led-spiral, led-diagonal (glowing LEDs cover the screen and
    switch off) · ambient "leds" (a faint moving LED matrix, nice on dark title slides) ·
-   data-led-bg="#0b130f" on <body> = the colour the LED wipes fill the screen with. Docs: README.md next to this file.
+   data-led-bg="#0b130f" on <body> = the colour the LED wipes fill the screen with, data-led-color = the LED glow
+   (default: the deck's accent). Docs: README.md next to this file.
    Link it before engine.js:  <script src="themes/pixelpine/theme.js" defer></script> */
 (window.slideEngineThemes = window.slideEngineThemes || []).push({ name: 'pixelpine', setup(se) {
-  const { W, H, fctx, sprite, clamp, sstep, layer, rafLoop, focusOf } = se;
+  const { W, H, fctx, clamp, sstep, layer, rafLoop, focusOf, rgba, mix } = se;
   const LED_BG = se.body.dataset.ledBg || '#0b130f';
+  /* the LED glow: data-led-color on <body>, else the deck's accent colour */
+  const sprite = (() => {
+    const hex = (se.body.dataset.ledColor || '').replace('#', '');
+    if (!hex) return se.sprite;
+    const f = hex.length === 3 ? hex.split('').map(c => c + c).join('') : hex, c = [0, 2, 4].map(i => parseInt(f.substr(i, 2), 16));
+    const cv = document.createElement('canvas'); cv.width = cv.height = 64; const g = cv.getContext('2d');
+    const r = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    r.addColorStop(0, rgba(mix(c, .9), 1)); r.addColorStop(.18, rgba(mix(c, .4), .95)); r.addColorStop(.45, rgba(c, .35)); r.addColorStop(1, rgba(c, 0));
+    g.fillStyle = r; g.fillRect(0, 0, 64, 64); return cv;
+  })();
 
   /* ---------- LED wipes: a grid of LEDs lights up along a pattern, covers the screen, then switches off ---------- */
   function ledWipe(kind) {

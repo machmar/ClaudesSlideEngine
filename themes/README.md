@@ -5,6 +5,9 @@ builds. A **theme** adds a look on top: more transitions, element effects, ambie
 Every name is unique across the core and all themes, so **a deck can link any number of themes and mix their
 effects freely**: a slide can come in with an LED wipe from one theme while its cards roll in with another's.
 
+**Every new presentation gets its own theme**, built from its subject, and it comes here when it adds something the
+catalogue doesn't have yet (see [CLAUDE.md](../CLAUDE.md), step 4 of "Making a presentation").
+
 ## Using themes in a deck
 
 Link each theme's `theme.js` **before** `engine.js`:
@@ -28,7 +31,11 @@ build like the engine.
    - `theme.json`: the manifest (below); every name `theme.js` registers must be listed here and nowhere else;
    - `README.md`: what it adds, its `<body>` options, which project it was made for, a demo link.
 2. Pick names that don't clash with the catalogue. A prefix helps (`led-…`).
-3. Show it off: a demo deck in `demo/<Something>-demo/` and/or a few slides in `demo/showcase/deck.html`.
+3. Show it off: the deck it was made for as `demo/<Name>-demo/` (paths to `../../`), and a section **at the end** of
+   `demo/showcase/deck.html`. The showcase keeps every info slide first (neutral core only), then one section per
+   theme in the order they were added; yours starts with a dark divider slide (kicker `Theme: <name>`, your ambient
+   if you have one), then one short slide per transition and effect, styled with your theme's look via a class.
+   Add what the deck solved in a new way to [`RECIPES.md`](../RECIPES.md).
 4. Run `python tools/themes.py`: it checks every theme and regenerates the catalogue below. The same check runs on
    every pull request.
 5. Open a pull request. See [CLAUDE.md](../CLAUDE.md#contributing-pull-requests-welcome).
