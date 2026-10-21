@@ -17,6 +17,29 @@ anything that makes the decks better, as many changes in one PR as belong togeth
 presentation; if yours turned out different from the existing ones, send it upstream with the talk as a demo. See
 [Contributing](CLAUDE.md#contributing-pull-requests-welcome) for what a good PR includes.
 
+## Prompt for Claude
+
+To get a presentation made, paste this into Claude (Claude Code, or any Claude that can read GitHub and write
+files) and finish the last line. The [landing page](https://machmar.github.io/ClaudesSlideEngine/) has a button
+that copies it.
+
+```text
+Make me a presentation with Claude's Slide Engine: https://github.com/machmar/ClaudesSlideEngine
+
+1. Get the repository (clone or download it next to my material) and read its CLAUDE.md first. Follow it step by step.
+2. If I don't say it below, ask me how long the talk is, who it is for and in which language it should be.
+3. Use only real material: the files, pictures and numbers I give you or point you to. Never invent images, numbers or quotes.
+4. Before writing slides, show me an outline with one line per slide and wait for my OK.
+5. Look in RECIPES.md for how each kind of slide was solved before, and in themes/README.md for the themes that exist.
+6. Make a theme for this presentation, built from its subject, and mix in existing themes where they fit.
+7. Check every slide in a browser, run tools/check-deck.js, then build one HTML file with build.py and tell me where it is.
+8. At the end, add what you solved in a new way to RECIPES.md. If the theme is different enough from the existing ones, offer to send it to the repository as a pull request.
+
+The presentation is about: 
+```
+
+## What it does
+
 A plain HTML file of `<section>` slides becomes a heavily animated presentation: 3D cube turns, an iris, blinds, a
 pixel dissolve, a zoom-through and a vortex between slides, every element building in (headings letter by letter,
 numbers counting up, cards flipping in, table rows sliding in, clips switching on), a zoomable slide overview on the
