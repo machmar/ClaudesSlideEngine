@@ -32,7 +32,8 @@ def core_names():
     trans = set(re.findall(r"\bT\['([\w-]+)'\]\s*=", js)) | set(re.findall(r"\bT\.(\w+)\s*=", js))
     fx = set(re.findall(r"'([\w-]+)'", re.search(r"const CORE_FX = \[(.*?)\];", js).group(1))) - {"none"}
     amb = set(re.findall(r"\bAMBIENTS\.(\w+)\s*=", js))
-    return {"transitions": trans, "effects": fx, "ambients": amb, "dots": set()}
+    dots = set(re.findall(r"\bDOTSTYLES\.(\w+)\s*=", js))
+    return {"transitions": trans, "effects": fx, "ambients": amb, "dots": dots}
 
 
 def registered(js):

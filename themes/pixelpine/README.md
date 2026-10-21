@@ -17,6 +17,7 @@ Demo: [PixelPine-demo](../../demo/PixelPine-demo/deck.html) (Czech) and the
 | `led-spiral` | transition | the same, sweeping in a spiral |
 | `led-diagonal` | transition | the same, across the diagonal |
 | `leds` | ambient | a faint LED matrix with a slow wave and twinkles behind the slide (`data-ambient="leds"`), good on dark title slides |
+| `led-dots` | dots | `data-dots="led-dots"` on `<body>` (or on the slides of a section): the progress dots glow like LEDs, the current one brightest |
 
 Options on `<body>`: `data-led-bg` = the colour the LEDs fill the screen with (default `#0b130f`); `data-led-color` =
 the colour the LEDs glow in (default: the deck's `data-accent`; the PixelPine talk uses `#ffc47d` as its accent).

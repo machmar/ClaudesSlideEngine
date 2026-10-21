@@ -134,7 +134,7 @@ any element's numbers), or `none`. Themes add more effects: see the [catalogue](
 | `data-lang` | `en` | `cs` for Czech key hints |
 | `data-width`, `data-height` | `1920`, `1080` | canvas size |
 | `data-transitions` | `cube-y,iris,blinds,dissolve,zoom,vortex,cube-x,fade` | cycle for slides without `data-enter` (theme names work too) |
-| `data-dots` | on | `off` hides the progress dots; a theme can add other styles |
+| `data-dots` | `counter` | progress indicator: `counter` ("3 / 17"), `dots` (plain dots), `off`, or a theme's style. Also works on a single `<section>`, overriding the deck's style for that slide (the showcase uses it so each theme section shows its own) |
 | `data-timer` | on | `off` hides the talk timer until T is pressed |
 | `data-wheel` | on | `off`: the scroll wheel doesn't open the slide overview |
 

@@ -6,7 +6,8 @@
 <title>Claude's Slide Engine: showcase</title>
 <!-- Showcase of the engine. Order: every info slide first, using only the neutral core; then one section per theme,
      in the order the themes were added (each section starts with a divider slide naming the theme). A new theme
-     appends its own section at the end. Single-file build: python ../../build.py deck.html -o showcase.html -->
+     appends its own section at the end; its slides set the theme's look by a class and its progress style by data-dots.
+     Single-file build: python ../../build.py deck.html -o showcase.html -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Fredoka:wght@400..700&family=Nunito+Sans:wght@400;600;700&display=swap">
 <link rel="stylesheet" href="../../engine.css">
 <script src="../../themes/pixelpine/theme.js" defer></script>
@@ -202,29 +203,29 @@
 
 <!-- ================= theme: pixelpine (the LED tree) ================= -->
 
-<section class="pp dark" data-enter="led-radial" data-ambient="leds" style="justify-content:center">
+<section data-dots="led-dots" class="pp dark" data-enter="led-radial" data-ambient="leds" style="justify-content:center">
   <p class="kicker">Theme: pixelpine</p>
   <h1>The LED tree</h1>
   <p style="color:#e4ddcf">LED-matrix wipes and a twinkling LED background, from the PixelPine Christmas tree talk.</p>
   <p class="label">Came in with led-radial, data-ambient="leds" behind it.</p>
-  <aside>The pixelpine theme: four LED wipe transitions and the LED matrix background. Its LEDs glow in data-led-color, here the tree's warm yellow, while the rest of the deck keeps the neutral accent.</aside>
+  <aside>The pixelpine theme: four LED wipe transitions, the LED matrix background and glowing progress dots (data-dots="led-dots" on these slides; the info part uses the core counter). Its LEDs glow in data-led-color, here the tree's warm yellow, while the rest of the deck keeps the neutral accent.</aside>
 </section>
 
-<section class="pp" data-enter="led-rain">
+<section data-dots="led-dots" class="pp" data-enter="led-rain">
   <h2>led-rain</h2>
   <p>LEDs light up falling like rain, cover the screen, then switch off.</p>
   <p class="label">Came in with led-rain (pixelpine).</p>
   <aside>All four LED wipes fill the screen with data-led-bg before revealing the new slide.</aside>
 </section>
 
-<section class="pp" data-enter="led-spiral">
+<section data-dots="led-dots" class="pp" data-enter="led-spiral">
   <h2>led-spiral</h2>
   <p>The same LEDs, sweeping in a spiral from the centre.</p>
   <p class="label">Came in with led-spiral (pixelpine).</p>
   <aside>led-spiral sweeps around the centre of the screen.</aside>
 </section>
 
-<section class="pp" data-enter="led-diagonal">
+<section data-dots="led-dots" class="pp" data-enter="led-diagonal">
   <h2>led-diagonal</h2>
   <p>And across the diagonal. A real talk with this theme: demo/PixelPine-demo.</p>
   <p class="label">Came in with led-diagonal (pixelpine).</p>
