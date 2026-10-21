@@ -93,6 +93,8 @@ timeline stands still, so everything looks frozen and screenshots lie.
 `engine.js` is one IIFE, no dependencies, standard web APIs only (current Firefox, Chrome, Edge; Safari untested). In order:
 
 1. **Config** from `<body data-*>`; the accent colour becomes CSS variables `--se-accent*` used by `engine.css`.
+   `setAccent()` switches it when a slide has its own `data-accent` (in `go()`: the new slide's accent for its builds,
+   the transition owner's accent during the transition, then the new slide's).
 2. **Stage build:** every `body > section` (or `body > main > section`) moves into `#se-stage` (1920 × 1080, scaled
    by `fit()`) and gets class `se-slide`. `<aside>` → notes, `img[data-video]` → `<video>`, a table's inline
    `padding` → `--cell-pad`. engine.css keeps its defaults at zero specificity (`:where`) so deck CSS wins, except
@@ -147,8 +149,8 @@ Whatever belongs together. A good PR:
   the end of the showcase: the showcase (`demo/showcase/deck.html`) keeps every info slide first, using only the neutral core; after them comes
   one section per theme, in the order the themes were added. A new theme **appends its section at the end**: a dark
   divider slide (kicker `Theme: <name>`, the theme's ambient if it has one), then one short slide per transition and
-  effect, styled with the theme's own look through a class on those slides and with its progress style (if it has
-  one) through `data-dots` on them;
+  effect, styled with the theme's own look through a class on those slides, with its colour through `data-accent`
+  and its progress style (if it has one) through `data-dots` on them;
 - adds its new solutions to `RECIPES.md` (one row each, pointing at the demo slide);
 - updates the docs it touches (`README.md`, a theme's README, the help table in `engine.js` if it adds a key);
 - was stepped through with `tools/test-harness.js` on the demo decks, and `tools/check-deck.js` passes on them;
@@ -166,8 +168,8 @@ Only open a pull request when the user asks for it or agrees to it; it is publis
 - Showcase order: the showcase (`demo/showcase/deck.html`) keeps every info slide first, using only the neutral core; after them comes
   one section per theme, in the order the themes were added. A new theme **appends its section at the end**: a dark
   divider slide (kicker `Theme: <name>`, the theme's ambient if it has one), then one short slide per transition and
-  effect, styled with the theme's own look through a class on those slides and with its progress style (if it has
-  one) through `data-dots` on them.
+  effect, styled with the theme's own look through a class on those slides, with its colour through `data-accent`
+  and its progress style (if it has one) through `data-dots` on them.
 - `RECIPES.md` is kept up to date by every deck that solves something new.
 - Don't commit built single-file decks (`*.html` outputs of `build.py` are tens of MB). `talks/` is git-ignored.
 - `HANDOVER.md`, if present, is the author's local session notes and is not part of the repo.

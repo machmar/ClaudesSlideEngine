@@ -133,7 +133,7 @@ any element's numbers), or `none`. Themes add more effects: see the [catalogue](
 
 | attribute | default | |
 |---|---|---|
-| `data-accent` | `#9fb3c8` (neutral) | colour of every glow: letter glow, iris ring, scan bar, progress dots, themes' lights |
+| `data-accent` | `#9fb3c8` (neutral) | colour of every glow: letter glow, iris ring, scan bar, progress dots, themes' lights. Also works on a single `<section>`: the colour changes while that slide is shown (a theme section of a deck can bring its own) |
 | `data-lang` | `en` | `cs` for Czech key hints |
 | `data-width`, `data-height` | `1920`, `1080` | canvas size |
 | `data-transitions` | `cube-y,iris,blinds,dissolve,zoom,vortex,cube-x,fade` | cycle for slides without `data-enter` (theme names work too) |

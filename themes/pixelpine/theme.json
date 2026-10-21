@@ -11,8 +11,7 @@
     "dots": ["led-dots"]
   },
   "options": {
-    "data-led-bg": "colour the LED wipes fill the screen with (default #0b130f)",
-    "data-led-color": "colour the LEDs glow in (default: the deck's data-accent)"
+    "data-led-bg": "colour the LED wipes fill the screen with (default #0b130f)"
   },
   "demo": "demo/PixelPine-demo/deck.html"
 }
