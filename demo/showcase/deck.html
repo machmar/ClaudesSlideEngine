@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&family=Nunito+Sans:wght@400;600;700&display=swap">
 <link rel="stylesheet" href="../../engine.css">
 <script src="../../themes/pixelpine/theme.js" defer></script>
+<script src="../../themes/train/theme.js" defer></script>
 <script src="../../engine.js" defer></script>
 <style>
   /* deck-wide look: plain CSS, nothing engine-specific */
@@ -183,6 +184,45 @@
   </ul>
   <p class="label">Came in with led-diagonal (pixelpine theme).</p>
   <aside>The repository's CLAUDE.md tells Claude how to plan, write, check and build a deck, so you only review the result.</aside>
+</section>
+
+<section data-enter="train">
+  <h2 data-fx="tow">A train theme</h2>
+  <div class="row">
+    <div class="card" data-fx="wagon"><p class="big" data-fx="puff">240 g</p><p class="label">Cards roll in on wheels: data-fx="wagon"</p></div>
+    <div class="card" data-fx="wagon"><p class="big" data-fx="puff">0,51 $</p><p class="label">Numbers come out of steam: data-fx="puff"</p></div>
+    <div class="card" data-fx="wagon"><p class="big" data-fx="puff">3 000 ms</p><p class="label">The heading is towed in: data-fx="tow"</p></div>
+  </div>
+  <p class="label">Came in with train (train theme): the old slide leaves as a wagon, the new one arrives behind the loco.</p>
+  <aside>The train theme was made for a toy locomotive project. The loco and wagon colours come from data-train on the body: body, chassis and wheels.</aside>
+</section>
+
+<section data-enter="steam">
+  <h2>Steam</h2>
+  <p>A cloud of steam rolls over the old slide from below and clears upwards.</p>
+  <p class="label">Came in with steam (train theme).</p>
+  <aside>Steam is the train theme's version of the LED wipes: soft puffs instead of LEDs.</aside>
+</section>
+
+<section data-enter="tunnel">
+  <h2>Through a tunnel</h2>
+  <p>The view rides into a tunnel mouth, past the lamps inside, and out through the exit onto the new slide.</p>
+  <p class="label">Came in with tunnel (train theme).</p>
+  <aside>The tunnel is drawn on the effect canvas, so it works over any slide.</aside>
+</section>
+
+<section data-enter="barrier">
+  <h2>Level crossing</h2>
+  <p>Six barriers swing down with blinking lamps, the slide changes behind them, and they lift again.</p>
+  <p class="label">Came in with barrier (train theme).</p>
+  <aside>The barrier transition is the train theme's version of blinds.</aside>
+</section>
+
+<section class="dark" data-enter="track" data-ambient="trains" style="justify-content:center">
+  <h2>Slides as wagons</h2>
+  <p style="color:#e4ddcf">The view zooms out, the train moves on by one wagon, and zooms in again.</p>
+  <p class="label" style="color:#cfc7b6">Came in with track, data-ambient="trains" behind it (train theme). data-dots="track" on the body turns the dots into a rail with a small loco.</p>
+  <aside>Little trains drive along the bottom of this slide, like the LED matrix on the title. A slide can also step through its own content first: see Steps inside a slide in the README.</aside>
 </section>
 
 <section class="dark" data-enter="led-spiral" data-ambient="leds" style="justify-content:center">

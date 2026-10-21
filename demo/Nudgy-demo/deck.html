@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nudgy</title>
+<!-- Source of the talk. Build the single-file version from this folder with:
+     python ../../build.py deck.html -o Nudgy.html -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&family=Nunito+Sans:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="../../engine.css">
+<script src="../../themes/train/theme.js" defer></script>
+<script src="../../engine.js" defer></script>
+<style>
+  .se-slide { font-family: 'Nunito Sans', Arial, sans-serif; }
+  .se-slide :where(th, td) { border-bottom-color: rgba(22, 39, 31, .14); }
+  .light { background: #F5F0E6; color: #16271F; padding: 112px 128px; display: flex; flex-direction: column; gap: 48px; }
+  .dark { background: #13221B; color: #F5F0E6; padding: 128px; display: flex; flex-direction: row; align-items: center; gap: 96px; }
+  h1, h2 { font-family: 'Fredoka', Arial, sans-serif; font-weight: 600; }
+  h2 { font-size: 64px; line-height: 1.15; }
+  .t { font-size: 40px; line-height: 1.35; }
+  .l { font-size: 32px; line-height: 1.35; }
+  .dim { color: #3F5047; }
+  .num { font-family: 'Fredoka', Arial, sans-serif; font-size: 64px; font-weight: 600; line-height: 1.1; color: #B23A22; }
+  .card { display: flex; flex-direction: column; gap: 8px; background: #FFFCF6; border: 2px solid #E2D9C6; border-radius: 24px; padding: 32px 40px; }
+  .stack { display: flex; flex-direction: column; gap: 32px; }
+  .row { display: flex; flex-direction: row; gap: 48px; }
+  .shot { border-radius: 24px; object-fit: cover; box-shadow: 0 12px 40px rgba(22, 39, 31, .18); }
+  .kicker { font-size: 32px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #FF8A5C; }
+
+  /* schematic tour */
+  .sch-view { position: absolute; left: 96px; top: 200px; width: 1728px; height: 816px; overflow: hidden; border-radius: 24px; border: 2px solid #E2D9C6; background: #F5F4EF; }
+  .sch-layer { position: absolute; left: 0; top: 0; width: 6788px; height: 2984px; transform-origin: 0 0; transition: transform .9s cubic-bezier(.65, 0, .25, 1); }
+  .sch-layer img, .sch-layer svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .sch-layer rect { fill: none; stroke-width: 5px; vector-effect: non-scaling-stroke; transition: opacity .5s; }
+  .sch-layer g.badge { transition: opacity .5s; }
+  .sch-view.zoomed .sch-layer g.badge { opacity: 0; }
+  .sch-view.zoomed .sch-layer rect { opacity: .25; }
+  .sch-view.zoomed .sch-layer rect.on { opacity: 1; }
+  .sch-panel { position: absolute; right: 24px; top: 24px; bottom: 24px; width: 500px; background: rgba(255, 252, 246, .96); border: 2px solid #E2D9C6; border-radius: 20px; padding: 32px 36px; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 8px 30px rgba(22, 39, 31, .12); }
+  .sch-step { display: none; flex-direction: column; gap: 20px; }
+  .sch-step.on { display: flex; }
+  .sch-step .hd { display: flex; align-items: center; gap: 20px; font-family: 'Fredoka', Arial, sans-serif; font-size: 40px; font-weight: 600; line-height: 1.15; }
+  .bdg { flex: none; width: 56px; height: 56px; border-radius: 50%; color: #fff; font-family: 'Fredoka', Arial, sans-serif; font-size: 32px; font-weight: 600; display: flex; align-items: center; justify-content: center; }
+  .legend { display: flex; flex-direction: column; gap: 20px; }
+  .legend div { display: flex; align-items: center; gap: 20px; font-size: 32px; font-weight: 700; }
+  .sch-dots { margin-top: auto; display: flex; gap: 12px; }
+  .sch-dots i { width: 18px; height: 18px; border-radius: 50%; background: #E2D9C6; }
+  .sch-dots i.on { background: #B23A22; }
+
+  /* live view */
+  .live-box { position: absolute; inset: 0; background: #14161C; }
+  .live-box iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .live-bar { position: absolute; left: 32px; bottom: 28px; display: flex; gap: 12px; align-items: center; }
+  .live-chip { padding: 10px 24px; border-radius: 16px; background: rgba(19, 34, 27, .85); color: #F5F0E6; font-family: 'Fredoka', Arial, sans-serif; font-size: 32px; font-weight: 600; display: flex; align-items: center; gap: 16px; pointer-events: none; }
+  .live-chip i { width: 18px; height: 18px; border-radius: 50%; background: #6B7A72; }
+  .live-chip.ok i { background: #E8553A; box-shadow: 0 0 12px #E8553A; animation: livepulse 1.4s ease-in-out infinite; }
+  @keyframes livepulse { 50% { opacity: .35; } }
+  .live-btns { display: flex; gap: 12px; }
+  .live-btns button { font: 600 32px 'Nunito Sans', Arial, sans-serif; padding: 8px 24px; border-radius: 14px; border: 2px solid #39404F; background: rgba(20, 22, 28, .85); color: #ECE9E2; cursor: pointer; }
+  .live-btns button.on { background: #F5F0E6; color: #16271F; border-color: #F5F0E6; }
+  .live-off { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; color: #ECE9E2; text-align: center; padding: 160px; }
+  .live-off.hide { display: none; }
+  .live-bar.autohide:has(.live-chip.ok) { opacity: 0; transition: opacity .8s 2.5s; }
+</style>
+</head>
+<body data-accent="#FF8A5C" data-led-bg="#0b130f" data-lang="cs" data-train="#C8402A,#2A5AA0,#1E1E22" data-dots="track">
+
+<!-- 1 · title -->
+<section id="cover" data-ambient="trains" class="dark">
+  <div style="display:flex; flex-direction:column; gap:32px; flex:1">
+    <p class="kicker">KTE · Projekt 2</p>
+    <h1 style="font-size:128px; line-height:1.05; color:#F5F0E6">Nudgy</h1>
+    <p class="t" style="color:#E4DDCF">Lokomotiva pro děti od jednoho roku, která cítí vlastní motor. Bez tlačítek a bez senzorů.</p>
+    <p class="l" style="color:#B9C6BD">Bc. Marek Mach · říjen 2026</p>
+  </div>
+  <img data-fx="spin3d" src="media/loco_iso_cut.png" alt="3D model lokomotivy Nudgy" style="width:720px; height:619px">
+  <aside>Dobrý den, představím projekt Nudgy. Je to hračka pro děti od jednoho roku: masivní lokomotiva, která nemá vypínač, tlačítka ani žádný senzor kromě vlastního motoru.
+
+Když do ní dítě strčí, rozjede se směrem, kterým ji strčilo. Zastaví, když do něčeho narazí, když ji někdo drží, nebo když ji zvedne ze země. Rozhodování dělá malá neuronová síť přímo v mikrokontroléru za jedenáct centů.
+
+Probereme zadání, jak to funguje, simulátor, ve kterém se síť učila, elektroniku, mechaniku, ceny a na konci bude živá ukázka.</aside>
+</section>
+
+<!-- 2 · brief + product -->
+<section id="brief" data-enter="steam" class="light" style="flex-direction:row; align-items:center; gap:72px">
+  <div class="stack" style="flex:1">
+    <h2 data-fx="tow">Zadání a produkt</h2>
+    <ul class="t" style="display:flex; flex-direction:column; gap:20px; padding-left:44px">
+      <li>Hračka pro děti od 1 roku</li>
+      <li>Strč → jede oběma směry</li>
+      <li>Náraz, držení, zvednutí → stop</li>
+      <li>Měří jen proud a otáčky motoru, rozhoduje neuronová síť v MCU</li>
+    </ul>
+    <div class="row" style="gap:32px">
+      <div class="card" data-fx="wagon"><p class="num" data-fx="puff">120 × 70 × 86</p><p class="l dim">mm, 240 g s bateriemi</p></div>
+      <div class="card" data-fx="wagon"><p class="num" data-fx="puff">0</p><p class="l dim">tlačítek a vypínačů</p></div>
+    </div>
+  </div>
+  <img data-fx="spin3d" src="media/loco_exploded.png" alt="Rozložený model: kryt, šasi s motorem, převody, baterie a kola" style="width:700px; height:760px; object-fit:cover; border-radius:32px">
+  <aside>Zadání bylo: hračka pro děti od jednoho roku, ovládaná pohybem. Strčím do ní a jede, oběma směry. Zastaví při nárazu a když ji zvednu. Měřit se má proud a otáčky a rozhodovat má neuronová síť v mikrokontroléru, která dostává rychlost a proud a má jeden výstup.
+
+Výsledkem je lokomotiva 120 krát 70 krát 86 milimetrů, s bateriemi váží 240 gramů. Na obrázku je rozložená: červený kryt, modré šasi s motorem, dvoustupňový převod, dvě baterie AA a pryžová kola.
+
+Nemá žádné tlačítko ani vypínač. Když si s ní nikdo nehraje, sama usne a probudí se dalším strčením.</aside>
+</section>
+
+<!-- 3 · how it works -->
+<section id="how" data-enter="train" class="light" style="flex-direction:row; align-items:center; gap:64px">
+  <div class="stack" style="flex:1; gap:28px">
+    <h2 data-fx="tow">Jak to funguje</h2>
+    <div class="card" data-fx="wagon"><p class="t"><b>Rychlost</b> z back-EMF motoru</p><p class="l dim">1 ms bez buzení každých 10 ms, bez enkodéru</p></div>
+    <div class="card" data-fx="wagon"><p class="t"><b>Proud</b> přes bočník 0,2 Ω</p><p class="l dim">náraz: rychlost padá, proud roste</p></div>
+    <div class="card" data-fx="wagon"><p class="t"><b>Síť GRU</b>, 12 jednotek, int8</p><p class="l dim">723 B, výstup = povel jeď / stůj</p></div>
+    <div class="card" data-fx="wagon"><p class="t"><b>Dozor v C</b> jen vypíná</p><p class="l dim">měkký rozjezd, limit 20 s, spánek, proud</p></div>
+  </div>
+  <img data-fx="power" src="video/sim-net.png" data-video="video/sim-net.webm" alt="Živý diagram sítě GRU: tři vstupy, 12 skrytých jednotek, jeden výstup" style="width:900px; height:673px; border-radius:24px">
+  <aside>Lokomotiva nemá enkodér. Rychlost se měří z motoru samotného: každých deset milisekund se na jednu milisekundu vypne buzení a mikrokontrolér změří napětí na svorkách. Točící se motor funguje jako dynamo, takže toto napětí je úměrné rychlosti. Proud měří bočník 0,2 ohmu.
+
+Tyto dvě hodnoty a poslední povel motoru jdou do rekurentní neuronové sítě GRU s dvanácti skrytými jednotkami. Na videu je ta síť živě ze simulátoru: vlevo tři vstupy, uprostřed paměť sítě, vpravo výstup, tedy jeď nebo stůj.
+
+Kolem sítě je jednoduchý dozor v C: měkký rozjezd, vypnutí po dvaceti sekundách jízdy, uspání a proudová ochrana. Dozor umí motor jen vypnout, každý rozjezd tedy pochází ze sítě.</aside>
+</section>
+
+<!-- 4 · simulator + results -->
+<section id="sim" data-enter="tunnel" class="light" style="gap:40px">
+  <h2 data-fx="tow">Simulátor, trénink a výsledky</h2>
+  <div class="row" style="align-items:flex-start; gap:56px">
+    <img data-fx="power" src="video/sim-crash.png" data-video="video/sim-crash.webm" alt="Simulátor: lokomotiva se rozjede po strčení a zastaví o zeď, vpravo dole průběh rychlosti, proudu a výstupu sítě" style="width:1040px; height:650px; border-radius:24px">
+    <div class="stack" style="flex:1; gap:28px">
+      <div><p class="num" data-fx="puff">0,12 s</p><p class="l dim">medián zastavení po nárazu</p></div>
+      <div><p class="num" data-fx="puff">24 / 27</p><p class="l dim">testovacích scénářů (int8)</p></div>
+      <div><p class="num" data-fx="puff">1,1 %</p><p class="l dim">nepoznaných strčení</p></div>
+      <p class="l">Učení: DAgger podle „učitele", který vidí skutečné síly</p>
+    </div>
+  </div>
+  <aside>Síť se učila v 3D simulátoru, který běží v prohlížeči. Simuluje motor, převody, prokluz kol, podlahy, koberce, zdi i ruku dítěte. Každá epizoda má náhodně posunuté parametry motoru, tření, hmotnosti a baterie, aby síť fungovala i na skutečných kusech, které nejsou stejné.
+
+Učí se metodou DAgger: pravidlový učitel vidí v simulaci skutečné síly a ví, kdy má lokomotiva stát. Síť vidí jen tři signály z motoru a učí se ho napodobit.
+
+Na videu je testovací scénář: strčení, jízda, náraz do zdi a zastavení. Výsledky kvantované sítě: medián zastavení 0,12 sekundy, projde 24 z 27 scénářů, nepozná jen 1,1 procenta strčení. Slabinou jsou přechody podlah, například práh dveří: ten si síť občas splete s měkkým nárazem a zastaví.</aside>
+</section>
+
+<!-- 5 · MCU + firmware -->
+<section id="fw" data-enter="barrier" class="light">
+  <h2 data-fx="tow">Mikrokontrolér a firmware</h2>
+  <div style="flex:1; display:grid; grid-template-columns:1fr 1fr; gap:32px">
+    <div class="card" data-fx="wagon"><p class="num" data-fx="puff">0,11 $</p><p class="t dim">Puya PY32F002B, Cortex-M0+ 24 MHz</p></div>
+    <div class="card" data-fx="wagon"><p class="num" data-fx="puff">19 % flash</p><p class="t dim">4 556 B z 24 KB, síť s tabulkami 2 264 B</p></div>
+    <div class="card" data-fx="wagon"><p class="num" data-fx="puff">11 % RAM</p><p class="t dim">344 B z 3 KB včetně zásobníku</p></div>
+    <div class="card" data-fx="wagon"><p class="num" data-fx="puff">0,25 ms</p><p class="t dim">výpočet za 10 ms cyklus, bez floatů (odhad)</p></div>
+  </div>
+  <p class="l dim">Zkušební překlad celé logiky, ne finální firmware. Bitově shodný se simulátorem: 28 600 cyklů, 0 rozdílů.</p>
+  <aside>Mikrokontrolér je Puya PY32F002B za jedenáct centů. Jádro Cortex-M0+, 24 megahertzů z vnitřního oscilátoru, bez krystalu. Levnější WCH CH32V003 nešel použít, protože potřebuje aspoň 2,7 voltu a dvě vybité tužkové baterie dají jen 2 volty.
+
+Celou logiku, tedy předzpracování, síť a dozor, jsem přeložil pro tento čip. Zabere 19 procent flash a 11 procent RAM, zbývá tedy místo na síť třikrát až čtyřikrát větší. Síť počítá jen v celých číslech, bez plovoucí čárky, a jeden krok zabere odhadem čtvrt milisekundy z deseti.
+
+Céčkový kód dává bit po bitu stejné výsledky jako simulátor, ověřeno na 28 600 cyklech. Jde o zkušební překlad, ne o odladěný firmware na skutečném hardwaru.</aside>
+</section>
+
+<!-- 6 · schematic tour (→ steps through the blocks) -->
+<section id="sch" data-enter="track" class="light" style="display:block">
+  <h2 data-fx="tow" style="position:absolute; left:96px; top:84px">Schéma</h2>
+  <div id="sch-view" class="sch-view" data-fx="none">
+    <div id="sch-layer" class="sch-layer">
+      <img data-fx="none" src="media/schematic.svg" alt="Schéma zapojení Nudgy">
+      <svg data-fx="none" viewBox="0 0 1697 746" preserveAspectRatio="none">
+        <rect data-b="1" x="12" y="91" width="420" height="130" rx="6" stroke="#D9603B"/>
+        <rect data-b="2" x="92" y="421" width="220" height="245" rx="6" stroke="#2E6B4E"/>
+        <rect data-b="3" x="502" y="26" width="665" height="415" rx="6" stroke="#3A6EA5"/>
+        <rect data-b="4" x="522" y="546" width="365" height="160" rx="6" stroke="#B07D1A"/>
+        <g class="badge" font-family="Fredoka, Arial, sans-serif" font-weight="600" font-size="34" fill="#fff" text-anchor="middle">
+          <circle cx="12" cy="91" r="27" fill="#D9603B"/><text x="12" y="103">1</text>
+          <circle cx="92" cy="421" r="27" fill="#2E6B4E"/><text x="92" y="433">2</text>
+          <circle cx="502" cy="26" r="27" fill="#3A6EA5"/><text x="502" y="38">3</text>
+          <circle cx="522" cy="546" r="27" fill="#B07D1A"/><text x="522" y="558">4</text>
+        </g>
+      </svg>
+    </div>
+    <div id="sch-panel" class="sch-panel">
+      <div class="sch-step on" data-s="0">
+        <p class="t"><b>28 součástek, 4 bloky</b></p>
+        <div class="legend">
+          <div><span class="bdg" style="background:#D9603B">1</span>Napájení</div>
+          <div><span class="bdg" style="background:#2E6B4E">2</span>Mikrokontrolér</div>
+          <div><span class="bdg" style="background:#3A6EA5">3</span>H-můstek</div>
+          <div><span class="bdg" style="background:#B07D1A">4</span>Snímání motoru</div>
+        </div>
+      </div>
+      <div class="sch-step" data-s="1">
+        <div class="hd"><span class="bdg" style="background:#D9603B">1</span>Napájení</div>
+        <p class="l">2 × AA přímo na MCU, bez stabilizátoru</p>
+        <p class="l">Q5 = P-MOSFET jako ideální dioda proti přepólování: úbytek ≈ 4 mV</p>
+      </div>
+      <div class="sch-step" data-s="2">
+        <div class="hd"><span class="bdg" style="background:#2E6B4E">2</span>PY32F002B</div>
+        <p class="l">4 výstupy PWM 20 kHz na hradla</p>
+        <p class="l">3 analogové vstupy: svorky motoru A, B a bočník</p>
+        <p class="l">programování přes plošky na spodní straně</p>
+      </div>
+      <div class="sch-step" data-s="3">
+        <div class="hd"><span class="bdg" style="background:#3A6EA5">3</span>H-můstek</div>
+        <p class="l">2 × AO3401A nahoře, 2 × AO3400A dole</p>
+        <p class="l">R9 0,2 Ω pod můstkem měří proud</p>
+        <p class="l">pull-upy drží tranzistory vypnuté v resetu</p>
+      </div>
+      <div class="sch-step" data-s="4">
+        <div class="hd"><span class="bdg" style="background:#B07D1A">4</span>Back-EMF</div>
+        <p class="l">každá svorka motoru na VCC/2 přes 470k/470k</p>
+        <p class="l">bez buzení je rozdíl A − B napětí motoru = rychlost</p>
+        <p class="l">10k + 1 nF chrání vstup ADC</p>
+      </div>
+      <div id="sch-dots" class="sch-dots"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+    </div>
+  </div>
+  <aside>Schéma má čtyři bloky. Šipkou nebo klikem přibližuji jednotlivé bloky, po čtvrtém se jde na další slajd.
+
+Jedna: napájení. Dvě tužkové baterie jdou přímo do procesoru, stabilizátor záměrně chybí. Proti otočeným bateriím chrání P-MOSFET zapojený jako ideální dioda, úbytek jsou jen čtyři milivolty.
+
+Dvě: mikrokontrolér. Čtyři výstupy PWM pro hradla a tři analogové vstupy: obě svorky motoru a bočník.
+
+Tři: H-můstek ze čtyř tranzistorů MOSFET, dole bočník 0,2 ohmu, na kterém se měří proud.
+
+Čtyři: měření back-EMF. Každá svorka motoru je přes dva odpory 470 kiloohmů posazená na polovinu napájení. Když je můstek vypnutý, rozdíl napětí obou svorek je napětí, které motor generuje, a to odpovídá rychlosti i směru. Odpor a kondenzátor chrání vstup převodníku.</aside>
+</section>
+
+<!-- 7 · PCB + BOM -->
+<section id="pcb" data-enter="steam" class="light" style="flex-direction:row; align-items:center; gap:64px">
+  <div class="stack" style="gap:24px">
+    <img data-fx="spin3d" src="media/pcb_top.png" alt="3D render horní strany desky Nudgy" style="width:620px; height:480px; object-fit:contain">
+    <p class="l dim" style="text-align:center">46 × 36 mm · 2 vrstvy · osazení z jedné strany</p>
+  </div>
+  <div class="stack" style="flex:1; gap:28px">
+    <h2 data-fx="tow">Deska a kusovník</h2>
+    <table style="font-size:32px; color:#16271F; padding:10px 18px">
+      <tr><th style="width:58%; text-align:left">Součástky</th><th style="width:14%; text-align:right">Ks</th><th style="width:28%; text-align:right">Cena / ks</th></tr>
+      <tr><td>MCU PY32F002B</td><td style="text-align:right">1</td><td style="text-align:right">0,108 $</td></tr>
+      <tr><td>MOSFETy AO3401A / AO3400A</td><td style="text-align:right">5</td><td style="text-align:right">0,305 $</td></tr>
+      <tr><td>Bočník 0,2 Ω 1206</td><td style="text-align:right">1</td><td style="text-align:right">0,012 $</td></tr>
+      <tr><td>Odpory a kondenzátory</td><td style="text-align:right">21</td><td style="text-align:right">0,084 $</td></tr>
+      <tr style="background:#F9E1D6"><td><b>Celkem, 12 položek</b></td><td style="text-align:right"><b>28</b></td><td style="text-align:right"><b>0,509 $</b></td></tr>
+    </table>
+    <p class="l dim">Ceny LCSC 2026-10-07 při 1 000 ks. Jen 2 díly „extended" u JLCPCB.</p>
+  </div>
+  <aside>Deska má 46 krát 36 milimetrů, dvě vrstvy, všech 28 součástek je na jedné straně, takže JLCPCB osadí desku v jednom průchodu. Deska je rozmístěná podle zadání, spoje zatím nejsou natažené.
+
+Elektronika stojí 51 centů na kus při tisíci kusech. Nejdražší je pět tranzistorů MOSFET, dohromady asi 31 centů, pak procesor za 11 centů. Odpory a kondenzátory jsou zlomky centu.
+
+U JLCPCB jsou jen dva díly typu extended, za které se platí poplatek za zakládání do osazovacího automatu: procesor a bočník. Bočník 0,2 ohmu v basic katalogu není. Měření proudu přes odpor otevřeného tranzistoru jsem zvažoval, ale bylo příliš hrubé.</aside>
+</section>
+
+<!-- 8 · mechanics + power -->
+<section id="mech" data-enter="train" class="light" style="flex-direction:row; align-items:center; gap:64px">
+  <img data-fx="spin3d" src="media/loco_section.png" alt="Řez lokomotivou: baterie, motor s převody a deska v šasi" style="width:820px; height:564px; object-fit:cover; border-radius:32px">
+  <div class="stack" style="flex:1; gap:28px">
+    <h2 data-fx="tow">Mechanika a napájení</h2>
+    <p class="t">Motor FA-130, převod 1 : 20<br>Kola z TPE, Ø 40 mm</p>
+    <div class="row" style="gap:32px">
+      <div><p class="num" data-fx="puff">60–90 mA</p><p class="l dim">při jízdě, 0,2–0,27 W</p></div>
+      <div><p class="num" data-fx="puff">9,3 µA</p><p class="l dim">ve spánku</p></div>
+    </div>
+    <div><p class="num" data-fx="puff">≈ 150 dní</p><p class="l dim">na 2 × AA při 30 min hraní denně (odhad)</p></div>
+  </div>
+  <aside>Mechanika: kryt a šasi z ABS, obyčejný motor velikosti 130, dvoustupňový převod 1 ku 20 a kola z měkkého TPE. Převod je záměrně nízký, aby dítě dokázalo lokomotivu roztlačit a motor se přitom točil. Tvrdá kola by na dlažbě prokluzovala a strčení by nebylo poznat. Všechny oddělitelné díly projdou testem malých částí pro děti do tří let.
+
+Napájení jsou dvě tužkové baterie bez stabilizátoru, pracovní rozsah 2 až 3,2 voltu. Při jízdě bere 60 až 90 miliampér, ve spánku 9,3 mikroampéru. Při půlhodině hraní denně vydrží sada baterií odhadem 150 dní.
+
+Rádio nemá žádné, takže odpadá směrnice o rádiových zařízeních. Pro CE stačí směrnice o bezpečnosti hraček, EMC a RoHS.</aside>
+</section>
+
+<!-- 9 · cost + price -->
+<section id="price" data-enter="barrier" class="light" style="background:#FFC47D">
+  <h2 data-fx="tow">Náklady a prodejní cena</h2>
+  <table style="font-size:40px; color:#16271F; padding:14px 24px">
+    <tr><th style="width:40%; text-align:left">Série</th><th style="width:20%; text-align:right">100 ks</th><th style="width:20%; text-align:right">1 000 ks</th><th style="width:20%; text-align:right">10 000 ks</th></tr>
+    <tr><td>Náklady v ČR za kus</td><td style="text-align:right">14,71 €</td><td style="text-align:right">11,43 €</td><td style="text-align:right">3,80 €</td></tr>
+    <tr><td>Z toho formy na plast</td><td style="text-align:right">–</td><td style="text-align:right">7,92 €</td><td style="text-align:right">1,76 €</td></tr>
+  </table>
+  <div class="row" style="gap:32px">
+    <div class="card" data-fx="wagon" style="flex:1; background:#FFF6E8; border:0"><p class="l" style="font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#7A4A12">V obchodě</p><p class="num" data-fx="puff" style="color:#16271F">24,90 €</p></div>
+    <div class="card" data-fx="wagon" style="flex:1; background:#FFF6E8; border:0"><p class="l" style="font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#7A4A12">Vlastní e-shop</p><p class="num" data-fx="puff" style="color:#16271F">22,90 €</p></div>
+    <div class="card" data-fx="wagon" style="flex:1; background:#FFF6E8; border:0"><p class="l" style="font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#7A4A12">Bod zvratu</p><p class="num" data-fx="puff" style="color:#16271F">≈ 2 450 ks</p></div>
+  </div>
+  <p class="l" style="color:#4A3A22">Konkurence: VTech Press &amp; Go ≈ 12 €, Fisher-Price lezoucí hračka ≈ 40 €</p>
+  <aside>Teď peníze. Náklady na kus dovezený do Česka: při stovce kusů 14,71 eura, ty se tisknou na 3D tiskárně a skládají ručně. Při tisíci kusech 11,43 eura, z toho skoro 8 eur jsou hliníkové formy na plast rozpočítané na malou sérii. Při deseti tisících s ocelovými formami 3,80 eura. K tomu certifikace asi 5 600 eur jednorázově.
+
+Doporučená cena v obchodě je 24,90 eura, tedy 599 korun, ve vlastním e-shopu 22,90. Lokomotiva stojí mezi levnými mačkacími hračkami VTech za 12 eur a lezoucími hračkami Fisher-Price za 40 eur.
+
+Velkoobchodní cena je 11,50 eura, takže první tisícovka je hlavně test trhu. Bod zvratu s ocelovými formami vychází zhruba na 2 450 kusů.</aside>
+</section>
+
+<!-- 10 · simulator, live -->
+<section id="simlive" data-enter="train" data-click="off" style="background:#14161C; padding:0; display:block">
+  <div class="live-box" data-fx="none">
+    <div class="live-off">
+      <p class="t" style="font-weight:700">Simulátor se připojuje…</p>
+      <p class="l" style="color:#9AA3B2">Na tomto PC spusť <b>start-simulator.bat</b> (simulátor běží na <b>http://localhost:8765/simulator/index.html</b>).</p>
+    </div>
+  </div>
+  <div class="live-bar autohide">
+    <div class="live-chip"><i></i>Simulátor</div>
+  </div>
+  <aside>Teď simulátor naživo, ten samý, ve kterém se síť učila. Lokomotivu můžu myší strčit a ona se rozjede, podržet, nebo zvednout, a ona zastaví. Do cesty můžu dát kostky, změnit podlahu nebo vybít baterie.
+
+Vpravo je průběh tří vstupů sítě, tedy rychlosti, proudu a povelu, a výstup sítě. Na kartě Network je vidět samotná síť: dvanáct skrytých jednotek, jak se mění při každém kroku.
+
+Lokomotivu řídí kvantovaná síť přesně tak, jak poběží v procesoru, včetně předzpracování a dozoru.</aside>
+</section>
+
+<!-- 11 · live view -->
+<section id="live" data-enter="tunnel" data-click="off" style="background:#14161C; padding:0; display:block">
+  <div id="live-box" class="live-box" data-fx="none">
+    <div id="live-off" class="live-off">
+      <p class="t" style="font-weight:700">Živý pohled se připojuje…</p>
+      <p class="l" style="color:#9AA3B2" id="live-hint">Na tomto PC spusť <b>start-quest.bat</b> a jednou otevři <b>https://localhost:8443/mr/view.html</b> (potvrď certifikát).</p>
+    </div>
+  </div>
+  <div id="live-bar" class="live-bar">
+    <div id="live-chip" class="live-chip"><i></i>Živá ukázka</div>
+    <div id="live-btns" class="live-btns"><button data-v="view.html" class="on">Svět</button><button data-v="mixedView.html">Kamera</button></div>
+  </div>
+  <aside>Živá ukázka.</aside>
+</section>
+
+<!-- 12 · end -->
+<section id="end" data-enter="track" data-ambient="trains" class="dark">
+  <div style="flex:1; display:flex; flex-direction:column; gap:40px">
+    <h2 style="font-size:96px; line-height:1.1">Děkuji za pozornost</h2>
+    <p class="t" style="color:#E4DDCF">0,51 $ elektroniky · 28 součástek · síť 723 B</p>
+    <p class="t" style="color:#E4DDCF">3,80 € při 10 000 ks · 24,90 € v obchodě</p>
+    <p class="l" style="color:#B9C6BD">Ověřeno v simulátoru. Další krok: prototyp a měření na skutečném motoru.</p>
+  </div>
+  <img data-fx="depart" data-chimney=".77,.12" src="media/loco_iso_cut.png" alt="Lokomotiva Nudgy" style="width:640px; height:550px">
+  <aside>Shrnutí: elektronika za 51 centů, 28 součástek na jednostranně osazené desce, neuronová síť zabírá 723 bajtů. Při sérii deset tisíc kusů stojí lokomotiva 3,80 eura, v obchodě 24,90.
+
+Hotové je schéma, rozmístěná deska, kusovník s živými cenami, 3D model, simulátor s natrénovanou sítí, zkušební překlad firmwaru a dokumentace pro CE. Všechno je ověřené v simulaci. Dalším krokem je prototyp: vytisknout kryt, osadit desku a změřit, jestli se skutečný motor chová jako ten simulovaný.
+
+Děkuji za pozornost, prostor pro dotazy.</aside>
+</section>
+
+<script>
+/* Schematic tour: on the schematic slide, next/back step through the four blocks before the deck moves on. */
+(() => {
+  const K = 4, CROP = [1697, 746];
+  const BLOCKS = [[0, 0, 1697, 746], [12, 91, 420, 130], [92, 421, 220, 245], [502, 26, 665, 415], [522, 546, 365, 160]];
+  const VIEW = [1728, 816], AREA = [VIEW[0] - 548, VIEW[1]], M = 36;   // the panel covers the right 548 px
+  const sec = document.getElementById('sch'), view = document.getElementById('sch-view'), layer = document.getElementById('sch-layer');
+  let step = 0;
+  function fit(i) {
+    const [x, y, w, h] = BLOCKS[i];
+    const s = Math.min((AREA[0] - 2 * M) / (w * K), (AREA[1] - 2 * M) / (h * K));
+    const tx = AREA[0] / 2 - (x + w / 2) * K * s, ty = AREA[1] / 2 - (y + h / 2) * K * s;
+    return `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${s.toFixed(5)})`;
+  }
+  function show(i) {
+    step = i; layer.style.transform = fit(i); view.classList.toggle('zoomed', i > 0);
+    layer.querySelectorAll('rect').forEach(r => r.classList.toggle('on', +r.dataset.b === i));
+    sec.querySelectorAll('.sch-step').forEach(s => s.classList.toggle('on', +s.dataset.s === i));
+    sec.querySelectorAll('#sch-dots i').forEach((d, j) => d.classList.toggle('on', j === i));
+  }
+  // every next/back input reaches the slide as se:step (engine.js); the wheel overview treats it as one slide
+  sec.addEventListener('se:step', e => { const n = step + e.detail.dir; if (n >= 0 && n < BLOCKS.length) { e.preventDefault(); show(n); } });
+  const reset = () => { layer.style.transition = 'none'; show(0); layer.offsetWidth; layer.style.transition = ''; };
+  sec.addEventListener('se:enter', reset);     // entering it again (from any side, or from the overview) starts at the overview
+  sec.addEventListener('se:leave', () => setTimeout(reset, 1500));
+  show(0);
+})();
+
+/* Live pages: an iframe from a local server, created only while its slide is shown. ?sim= / ?live= give another origin. */
+function livePage(id, origins, path, page) {
+  const sec = document.getElementById(id), box = sec.querySelector('.live-box'), off = sec.querySelector('.live-off'), chip = sec.querySelector('.live-chip');
+  let frame = null, origin = null, on = false, retry = null, leaveT = null;
+  async function reachable(o) {
+    try { await fetch(o + path(page), { mode: 'no-cors', cache: 'no-store' }); return true; } catch (e) { return false; }
+  }
+  async function connect() {
+    clearTimeout(retry);
+    if (!on) return;
+    for (const o of origins) if (await reachable(o)) { origin = o; break; }
+    if (!on) return;
+    if (!origin) { off.classList.remove('hide'); chip.classList.remove('ok'); retry = setTimeout(connect, 3000); return; }
+    load();
+  }
+  function load() {
+    if (frame) frame.remove();
+    frame = document.createElement('iframe');          // a new element each time: no history entries in the deck
+    frame.allow = 'camera; microphone; fullscreen; xr-spatial-tracking';
+    frame.src = origin + path(page);
+    box.appendChild(frame); off.classList.add('hide'); chip.classList.add('ok');
+  }
+  function enter() { on = true; clearTimeout(leaveT); if (!frame) connect(); }
+  function leave() {
+    on = false; clearTimeout(retry);
+    leaveT = setTimeout(() => { if (frame) { frame.remove(); frame = null; } origin = null; off.classList.remove('hide'); chip.classList.remove('ok'); }, 1500);
+  }
+  sec.querySelectorAll('.live-btns button').forEach(b => b.addEventListener('click', () => {
+    page = b.dataset.v; sec.querySelectorAll('.live-btns button').forEach(x => x.classList.toggle('on', x === b));
+    if (on && origin) load();
+  }));
+  // keys stay with the deck: when a click moves focus into the page, hand it back (mouse dragging still reaches it)
+  addEventListener('blur', () => setTimeout(() => { if (frame && document.activeElement === frame) { frame.blur(); window.focus(); } }, 0));
+  sec.addEventListener('se:enter', enter);
+  sec.addEventListener('se:leave', leave);
+}
+{
+  const qs = new URLSearchParams(location.search);
+  livePage('simlive', qs.get('sim') ? [qs.get('sim')] : ['http://localhost:8765'], p => '/simulator/' + p, 'index.html');
+  livePage('live', qs.get('live') ? [qs.get('live')] : ['https://localhost:8443', 'http://localhost:8766'], p => '/mr/' + p, 'view.html');
+}
+</script>
+</body>
+</html>

@@ -94,11 +94,13 @@ them when the slide is left, and the overview, the planner and `tools/check-deck
 |---|---|---|---|---|
 | **core** (built into `engine.js`) | neutral: cube turns, iris, blinds, dissolve, zoom, vortex and the automatic element builds | 10 transitions, 13 effects | | [showcase](../demo/showcase/deck.html) |
 | [**pixelpine**](pixelpine/README.md) | Glowing LED matrix wipes and a twinkling LED background, from the PixelPine Christmas tree talk. | 4 transitions, 1 ambient | electronics, glow, led | [PixelPine-demo](../demo/PixelPine-demo/deck.html) |
+| [**train**](train/README.md) | A toy steam loco pulls slides away as wagons, steam clouds, a tunnel, level-crossing barriers, cards on wheels. | 5 transitions, 4 effects, 1 ambient, 1 dot style | playful, steam, transport | [Nudgy-demo](../demo/Nudgy-demo/deck.html) |
 
 ### Transitions (`data-enter`), A–Z
 
 | name | theme |
 |---|---|
+| `barrier` | [train](train/README.md) |
 | `blinds` | core |
 | `cube-x` | core |
 | `cube-y` | core |
@@ -111,6 +113,10 @@ them when the slide is left, and the overview, the planner and `tools/check-deck
 | `led-rain` | [pixelpine](pixelpine/README.md) |
 | `led-spiral` | [pixelpine](pixelpine/README.md) |
 | `none` | core |
+| `steam` | [train](train/README.md) |
+| `track` | [train](train/README.md) |
+| `train` | [train](train/README.md) |
+| `tunnel` | [train](train/README.md) |
 | `vortex` | core |
 | `zoom` | core |
 
@@ -119,24 +125,35 @@ them when the slide is left, and the overview, the planner and `tools/check-deck
 | name | theme |
 |---|---|
 | `count` | core |
+| `depart` | [train](train/README.md) |
 | `fade` | core |
 | `flip` | core |
 | `letters` | core |
 | `list` | core |
 | `pop` | core |
 | `power` | core |
+| `puff` | [train](train/README.md) |
 | `radial` | core |
 | `rise` | core |
 | `rows` | core |
 | `scan` | core |
 | `spin3d` | core |
 | `tilt` | core |
+| `tow` | [train](train/README.md) |
+| `wagon` | [train](train/README.md) |
 
 ### Ambient backgrounds (`data-ambient`), A–Z
 
 | name | theme |
 |---|---|
 | `leds` | [pixelpine](pixelpine/README.md) |
+| `trains` | [train](train/README.md) |
+
+### Progress dot styles (`data-dots`), A–Z
+
+| name | theme |
+|---|---|
+| `track` | [train](train/README.md) |
 
 ### By tag
 
@@ -145,5 +162,8 @@ them when the slide is left, and the overview, the planner and `tools/check-deck
 | electronics | [pixelpine](pixelpine/README.md) |
 | glow | [pixelpine](pixelpine/README.md) |
 | led | [pixelpine](pixelpine/README.md) |
+| playful | [train](train/README.md) |
+| steam | [train](train/README.md) |
+| transport | [train](train/README.md) |
 
 <!-- catalogue:end -->

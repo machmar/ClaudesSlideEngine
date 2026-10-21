@@ -138,6 +138,8 @@ Whatever belongs together. A good PR:
 - was stepped through with `tools/test-harness.js` on the demo decks, and `tools/check-deck.js` passes on them;
 - says in the description what it adds and how it was tested (browser and version); the PR template asks for this.
 
+Worked example: the pull request that added the train theme together with the Nudgy talk as its demo (PR #1).
+
 Only open a pull request when the user asks for it or agrees to it; it is published under their GitHub account.
 
 ## Repo conventions

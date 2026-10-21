@@ -1,0 +1,17 @@
+{
+  "name": "train",
+  "title": "Train",
+  "description": "A toy steam loco pulls slides away as wagons, steam clouds, a tunnel, level-crossing barriers, cards on wheels.",
+  "author": "machmar (made with Claude)",
+  "tags": ["playful", "steam", "transport"],
+  "provides": {
+    "transitions": ["barrier", "steam", "track", "train", "tunnel"],
+    "effects": ["depart", "puff", "tow", "wagon"],
+    "ambients": ["trains"],
+    "dots": ["track"]
+  },
+  "options": {
+    "data-train": "loco body, chassis and wheel colours (default #c8402a,#2a5aa0,#1e1e22)"
+  },
+  "demo": "demo/Nudgy-demo/deck.html"
+}
