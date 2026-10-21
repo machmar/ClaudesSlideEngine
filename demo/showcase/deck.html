@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Fredoka:wght@400..700&family=Nunito+Sans:wght@400;600;700&display=swap">
 <link rel="stylesheet" href="../../engine.css">
 <script src="../../themes/pixelpine/theme.js" defer></script>
+<script src="../../themes/train/theme.js" defer></script>
 <script src="../../engine.js" defer></script>
 <style>
   /* neutral core look (info slides) */
@@ -45,6 +46,14 @@
   section.pp .kicker { color: #ffc47d; }
   section.pp .label { color: #3f5047; }
   section.pp.dark .label { color: #cfc7b6; }
+  section.tr { font-family: 'Nunito Sans', Arial, sans-serif; background: #f5f0e6; color: #16271f; }
+  section.tr.dark { background: #13221b; color: #f5f0e6; }
+  section.tr h1, section.tr h2 { font-family: Fredoka, Arial, sans-serif; font-weight: 600; letter-spacing: 0; }
+  section.tr .kicker { color: #ff8a5c; }
+  section.tr .label { color: #3f5047; }
+  section.tr.dark .label { color: #cfc7b6; }
+  section.tr .big { font-family: Fredoka, Arial, sans-serif; font-weight: 600; color: #b23a22; }
+  section.tr .card { background: #fffcf6; border-color: #e2d9c6; }
 </style>
 </head>
 <body data-accent="#9fb3c8" data-lang="en">
@@ -231,6 +240,51 @@
   <p>And across the diagonal. A real talk with this theme: demo/PixelPine-demo.</p>
   <p class="label">Came in with led-diagonal (pixelpine).</p>
   <aside>led-radial, used on the theme's first slide, starts at data-focus or at the outgoing slide's first picture.</aside>
+</section>
+
+<!-- ================= theme: train ================= -->
+
+<section data-dots="track" data-accent="#ff8a5c" class="tr dark" data-enter="train" data-ambient="trains" style="justify-content:center">
+  <p class="kicker">Theme: train</p>
+  <h1>Steam trains</h1>
+  <p style="color:#e4ddcf">A toy steam train: slides leave as wagons, steam, a tunnel, level crossings, cards on wheels.</p>
+  <p class="label">Came in with train: the old slide left as a wagon, this one arrived behind the loco. data-ambient="trains" behind it.</p>
+  <aside>The train theme was made for the Nudgy talk about a toy locomotive. The loco and wagon colours come from data-train on the body: body, chassis and wheels.</aside>
+</section>
+
+<section data-dots="track" data-accent="#ff8a5c" class="tr" data-enter="steam">
+  <h2 data-fx="tow">Cards on wheels</h2>
+  <div class="row">
+    <div class="card" data-fx="wagon"><p class="big" data-fx="puff">240 g</p><p class="label">Cards roll in on wheels: data-fx="wagon"</p></div>
+    <div class="card" data-fx="wagon"><p class="big" data-fx="puff">0,11 $</p><p class="label">Numbers come out of steam: data-fx="puff"</p></div>
+    <div class="card" data-fx="wagon"><p class="big" data-fx="puff">9,3 µA</p><p class="label">The heading is towed in: data-fx="tow"</p></div>
+  </div>
+  <p class="label">Came in with steam (train): a cloud rolls over the screen from below and clears upwards.</p>
+  <aside>tow suits headings, wagon suits cards, puff suits the big number inside a card: it waits until its card has arrived, then counts up.</aside>
+</section>
+
+<section data-dots="track" data-accent="#ff8a5c" class="tr" data-enter="tunnel">
+  <h2>Through a tunnel</h2>
+  <p>The view rides into a tunnel mouth, past the lamps inside, and out through the exit onto the new slide.</p>
+  <p class="label">Came in with tunnel (train).</p>
+  <aside>The tunnel is drawn on the effect canvas, so it works over any slide.</aside>
+</section>
+
+<section data-dots="track" data-accent="#ff8a5c" class="tr" data-enter="barrier">
+  <h2>Level crossing</h2>
+  <p>Six barriers swing down with blinking lamps, the slide changes behind them, and they lift again.</p>
+  <p class="label">Came in with barrier (train).</p>
+  <aside>The barrier transition is the train theme's version of blinds.</aside>
+</section>
+
+<section data-dots="track" data-accent="#ff8a5c" class="tr" data-enter="track" style="flex-direction:row;align-items:center;gap:80px">
+  <img data-fx="depart" data-chimney=".77,.12" src="../Nudgy-demo/media/loco_iso_cut.png" alt="The Nudgy toy locomotive" style="width:760px;height:auto">
+  <div style="display:flex;flex-direction:column;gap:32px;flex:1">
+    <h2>Slides as wagons</h2>
+    <p>The view zooms out, the train moves on by one wagon, and zooms in again.</p>
+    <p class="label">Came in with track (train). The loco uses data-fx="depart": it drives off and backs in every 14 s. Below: data-dots="track", the progress as a rail. A real talk with this theme: demo/Nudgy-demo.</p>
+  </div>
+  <aside>The last slide of the train section. depart is meant for the closing slide of a talk about a vehicle.</aside>
 </section>
 
 </body>
