@@ -27,16 +27,7 @@
   /* "For Claude": copies the starting prompt */
   .claude { background: var(--card); border: 2px solid var(--accent); border-radius: 18px; padding: 24px 26px; margin: 0 0 36px; }
   .claude h2 { font-size: 22px; margin: 0 0 6px; }
-  .claude .row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-top: 14px; }
-  .claude button { font: 700 17px Inter, Arial, sans-serif; color: var(--bg); background: var(--accent); border: 0; border-radius: 12px;
-    padding: 12px 22px; cursor: pointer; }
-  .claude button:hover { filter: brightness(1.1); }
-  .claude button:focus-visible { outline: 3px solid var(--fg); outline-offset: 2px; }
-  .claude .done { color: var(--ok); font-weight: 600; min-height: 1.5em; }
-  details { margin-top: 14px; }
-  summary { cursor: pointer; color: var(--muted); }
-  #prompt { white-space: pre-wrap; font: 14px/1.55 Consolas, 'Courier New', monospace; color: var(--fg); background: var(--bg);
-    border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; margin: 10px 0 0; overflow-x: auto; }
+  .claude [data-for-claude] { margin-top: 14px; }
 </style>
 </head>
 <body>
@@ -51,25 +42,7 @@
     <h2 id="fc">Get a presentation made</h2>
     <p>Copy this prompt into Claude (Claude Code, or any Claude that can read GitHub and write files), then finish its
       last line with what your talk is about.</p>
-    <div class="row">
-      <button type="button" id="copy">For Claude: copy the prompt</button>
-      <span class="done" id="done" role="status" aria-live="polite"></span>
-    </div>
-    <details>
-      <summary>Show the prompt</summary>
-<pre id="prompt">Make me a presentation with Claude's Slide Engine: https://github.com/machmar/ClaudesSlideEngine
-
-1. Get the repository (clone or download it next to my material) and read its CLAUDE.md first. Follow it step by step.
-2. If I don't say it below, ask me how long the talk is, who it is for and in which language it should be.
-3. Use only real material: the files, pictures and numbers I give you or point you to. Never invent images, numbers or quotes.
-4. Before writing slides, show me an outline with one line per slide and wait for my OK.
-5. Look in RECIPES.md for how each kind of slide was solved before, and in themes/README.md for the themes that exist.
-6. Make a theme for this presentation, built from its subject, and mix in existing themes where they fit.
-7. Check every slide in a browser, run tools/check-deck.js, then build one HTML file with build.py and tell me where it is.
-8. At the end, add what you solved in a new way to RECIPES.md. If the theme is different enough from the existing ones, offer to send it to the repository as a pull request.
-
-The presentation is about: </pre>
-    </details>
+    <div data-for-claude></div>
   </section>
 
   <div class="cards">
@@ -83,19 +56,6 @@ The presentation is about: </pre>
   <p class="note">Made for Claude to build presentations with, not really for people to use directly.
     See the <a href="https://github.com/machmar/ClaudesSlideEngine">repository</a>.</p>
 </main>
-<script>
-  const btn = document.getElementById('copy'), done = document.getElementById('done'), text = document.getElementById('prompt').textContent;
-  btn.addEventListener('click', async () => {
-    let ok = false;
-    try { await navigator.clipboard.writeText(text); ok = true; } catch (e) {
-      const t = document.createElement('textarea'); t.value = text; t.style.position = 'fixed'; t.style.opacity = '0';
-      document.body.appendChild(t); t.select();
-      try { ok = document.execCommand('copy'); } catch (e2) {}
-      t.remove();
-    }
-    done.textContent = ok ? 'Copied. Paste it into Claude and finish the last line.' : 'Copy failed: open "Show the prompt" and copy it by hand.';
-    if (!ok) document.querySelector('details').open = true;
-  });
-</script>
+<script src="for-claude.js"></script>
 </body>
 </html>

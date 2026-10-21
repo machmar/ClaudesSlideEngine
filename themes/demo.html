@@ -9,6 +9,7 @@
      python tools/themes.py regenerates: a new theme shows up here without editing this page. -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
 <script src="catalogue.js"></script>
+<script src="../for-claude.js" defer></script>
 <style>
   :root { --bg: #16191e; --fg: #eef0f3; --muted: #a9b2bd; --card: #1f242b; --line: #343b45; --accent: #9fb3c8; --a: #2f5d8a; --b: #c2603d; }
   * { box-sizing: border-box; }
@@ -39,6 +40,9 @@
   .run.secondary { background: transparent; color: var(--fg); border: 1px solid var(--line); }
   .run:focus-visible, nav button:focus-visible { outline: 3px solid var(--fg); outline-offset: 2px; }
   .use { color: var(--muted); margin-top: 10px; }
+  .fc { margin-top: 14px; background: var(--card); border: 1px solid var(--accent); border-radius: 14px; padding: 12px 16px; }
+  .fc p { color: var(--fg); margin: 0 0 10px; }
+  :root { --ok: #8fd19e; }
   @media (max-width: 820px) { .wrap { grid-template-columns: 1fr; } nav { max-height: 320px; order: 2; } }
 </style>
 </head>
@@ -49,6 +53,10 @@
     B <span class="ab" style="background:var(--b)"></span>orange, so you can see what goes where. The list is built from the
     <a href="https://github.com/machmar/ClaudesSlideEngine/blob/main/themes/README.md#catalogue">catalogue</a>; every new theme appears here by itself.
     <a href="../">Back to the start page</a>.</p>
+  <div class="fc">
+    <p><b>Want a presentation with these?</b> Copy the prompt into Claude and finish its last line with what your talk is about.</p>
+    <div data-for-claude></div>
+  </div>
 </header>
 <div class="wrap">
   <nav id="list" aria-label="Transitions, effects, backgrounds and progress styles"></nav>

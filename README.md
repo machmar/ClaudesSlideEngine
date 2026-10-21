@@ -20,8 +20,8 @@ presentation; if yours turned out different from the existing ones, send it upst
 ## Prompt for Claude
 
 To get a presentation made, paste this into Claude (Claude Code, or any Claude that can read GitHub and write
-files) and finish the last line. The [landing page](https://machmar.github.io/ClaudesSlideEngine/) has a button
-that copies it.
+files) and finish the last line. The [start page](https://machmar.github.io/ClaudesSlideEngine/) and the
+[theme demo](https://machmar.github.io/ClaudesSlideEngine/themes/demo.html) have a button that copies it.
 
 ```text
 Make me a presentation with Claude's Slide Engine: https://github.com/machmar/ClaudesSlideEngine
