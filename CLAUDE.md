@@ -3,12 +3,13 @@
 This repo is a presentation toolkit **for you (Claude) to use**. People ask you to make or convert a presentation;
 you write a deck of plain HTML `<section>` slides, the engine animates it, `build.py` packs it into one file.
 Read this file, then follow it. Reference for every attribute and effect: `README.md`. Default look and tone:
-`PRESENTATION-STYLE.md`. Worked examples: `demo/showcase/deck.html` (shared CSS classes, English) and
-`demo/PixelPine-demo/deck.html` (inline styles, Czech, pictures and video clips).
+`PRESENTATION-STYLE.md`. Themes and the catalogue of every effect: `themes/README.md`. Worked examples:
+`demo/showcase/deck.html` (shared CSS classes, English) and `demo/PixelPine-demo/deck.html` (inline styles, Czech,
+pictures and video clips).
 
-**Pull requests are highly welcome** (new transitions, element effects, controls, fixes, anything). If you add or
-improve something in the engine while making someone's deck, tell the user it could go upstream and offer to prepare
-a pull request to https://github.com/machmar/ClaudesSlideEngine (see Contributing at the end).
+**Pull requests are highly welcome** (new themes, transitions, element effects, controls, fixes, anything). If you
+make a theme or improve the engine while making someone's deck, tell the user it could go upstream and offer to
+prepare a pull request to https://github.com/machmar/ClaudesSlideEngine (see Contributing at the end).
 
 ## Making a presentation
 
@@ -23,21 +24,26 @@ a pull request to https://github.com/machmar/ClaudesSlideEngine (see Contributin
    (MP4, H.264, small: 640–1280 px wide, a few MB). Use renders, screenshots, schematic crops, photos and charts from
    the user's project. **Never invent images, numbers, quotes or statistics.** If something is missing, leave it out
    or ask. You may draw simple diagrams as inline `<svg>`.
-4. **Write `deck.html`.** Start from a copy of a demo deck and fix the two relative paths to `engine.css` and
-   `engine.js`. Rules:
+4. **Pick themes.** The core is neutral. Read the catalogue in `themes/README.md` and pick what fits the topic (an
+   electronics project might use the LED wipes of `pixelpine`, a vehicle the `train` theme); mixing several themes is
+   fine, names never clash. If nothing fits and the user wants a distinct look, write a new theme in `themes/<name>/`
+   following `themes/README.md` (run `python tools/themes.py`), and offer to send it upstream afterwards.
+5. **Write `deck.html`.** Start from a copy of a demo deck and fix the relative paths to `engine.css`, `engine.js`
+   and the themes (theme scripts go **before** `engine.js`). Rules:
    - one `<section>` per slide, laid out with normal CSS on a 1920 × 1080 canvas (flex column by default);
    - text sizes only 64 px headings, 40 px body, 32 px labels (one 96–128 px title on the first and last slide);
-   - every slide except the first has its own `data-enter`, no two neighbours alike, no `glitch` unless asked;
+   - every slide except the first has its own `data-enter` (core or a linked theme), no two neighbours alike, no
+     `glitch` unless asked;
    - every slide has `<aside>` speaker notes: 30–60 s of full spoken sentences, same language as the slides;
    - set `data-lang` (`cs` or `en` key hints) and `data-accent` on `<body>`;
    - let the automatic builds work; add `data-fx` only where it helps (`power` for clips, `spin3d` for product
      renders, `scan` for schematics and screenshots).
-5. **Check it in a browser** (see Testing below): load `tools/test-harness.js`, step to every slide and look at a
+6. **Check it in a browser** (see Testing below): load `tools/test-harness.js`, step to every slide and look at a
    screenshot of each one, then run `tools/check-deck.js` and fix everything it lists. Open the overview (wheel or G)
-   for a one-screen look at all slides.
-6. **Build** the portable file: `python <engine>/build.py deck.html -o <Name>.html` (embeds the engine, pictures and
+   for a one-screen look at all slides. The console warns about any name whose theme isn't linked.
+7. **Build** the portable file: `python <engine>/build.py deck.html -o <Name>.html` (embeds the engine, pictures and
    clips; Google Fonts stay links). Rebuild after every change to the deck.
-7. **Hand over:** the path of the built file, the slide list, anything you left out and why. Mention F (full
+8. **Hand over:** the path of the built file, the slide list, anything you left out and why. Mention F (full
    screen), N (notes), the wheel overview and H (all controls).
 
 ## Converting an existing presentation
@@ -70,7 +76,7 @@ timeline stands still, so everything looks frozen and screenshots lie.
 4. Inputs: dispatch `KeyboardEvent`s on `document.body` and `WheelEvent`s on `#se-stage` (not `window`).
    Synthetic events can't prove real mouse-driver behaviour; ask the user to try side buttons and the wheel.
 
-`window.slideEngine` = `{ go(n), next(), prev(), overview(), current, slides, notes, transitions }`.
+`window.slideEngine` = `{ go(n), next(), prev(), overview(), current, slides, notes, themes, transitions }`.
 
 ## Changing the engine
 
@@ -85,41 +91,59 @@ timeline stands still, so everything looks frozen and screenshots lie.
    paused, `playBuilds()` starts them when the transition calls `reveal()`, `resetBuilds()` cancels them. `count` is
    a rAF tween (`renderCount`) that handles `1 000`, decimal commas, leading zeros and `a → b`.
 4. **Transitions:** registry `T[name] = async (from, to, dir, reveal)`, helpers `A()` (tracked Web Animation),
-   `layer()`, `rafLoop()`, `focusOf()`. LED wipes draw on the `#se-fx` canvas. Going back plays the leaving slide's
+   `layer()`, `rafLoop()`, `focusOf()`; canvas effects draw on `#se-fx`. Going back plays the leaving slide's
    transition reversed. Slides without `data-enter` get one from the cycle and are marked `data-enter-auto`.
+   Registries `T`, `BUILDS` (theme element effects, run from `makeBuild`'s `default:`), `AMBIENTS`, `DOTSTYLES`.
+   Elements made for an effect use `helper()` (class `se-helper`): removed by `resetBuilds`, ignored by plans,
+   overview clones and `check-deck.js`. `prime()` measures elements whose effect asks for it (`geoOf()`) and gives
+   each a scratch object `el._se`.
 5. **Navigation:** `go(n)`; input during a transition sets `skipFx`, finishes it and queues the target. Keys, click
    (left 20 % = back), touch swipe, mouse buttons 3/4, BrowserBack/Forward keys and a history trap (after the first
    gesture the page sits on a middle history entry; `popstate` to either neighbour becomes prev/next). `nav()` drops
-   duplicate signals within 450 ms. Right click is disabled.
+   duplicate signals within 450 ms. Right click is disabled. `next()` / `prev()` first dispatch a cancelable `se:step`
+   on the current slide (in-slide steps, README "Steps inside a slide"); `go()` and `closeOverview()` fire
+   `se:leave` / `se:enter` on the two slides.
 6. **Overview** (`openOverview` / `closeOverview`, `ovState` 0 closed / 1 open / 2 closing): static clones of every
    slide in `#se-ov`, 3 columns up to 9 slides, else 4; extra rows scroll the grid. The wheel opens it, then steps
    the highlight (80 px of delta = one notch). `next` enters the highlighted slide (shown finished, no builds),
    `prev` returns to the starting slide. `go()` is ignored while it is open.
 7. **Timer** `#se-timer` (bottom right, starts on the first slide change, `setInterval`), T / Shift+T.
    **Help panel** `#se-help` (H / ? / F1, closes after 6 s or on any key/click).
+8. **Themes:** theme files push `{ name, setup(se) }` onto `window.slideEngineThemes` before the engine runs; after
+   the core transitions are defined, the engine calls every `setup(themeAPI)` (API in `themes/README.md`), then
+   creates the ambients (`startAmbients()`) and warns in the console about unknown names. A theme loaded after the
+   engine is reported and ignored.
 
-Adding a transition: write `T['name']` (layer both slides, animate with `A()` or `rafLoop()`, call `reveal()` when the
+**New looks go into a theme**, not the core: the core stays neutral and only gets things every deck can use. Adding a
+core transition: write `T['name']` (layer both slides, animate with `A()` or `rafLoop()`, call `reveal()` when the
 new slide shows, await the end), then add it to the README table and to `demo/showcase/deck.html`. Adding an element
 animation: a `case` in `makeBuild()`, optionally a rule in `plan()`, the README table. Adding a key: the keydown
 handler, the help table in `engine.js`, the README "Presenting" section and the controls slide of the showcase.
 
-After any engine change: open both demo decks, step through them with the harness, run `tools/check-deck.js`, and
-keep `README.md` in sync. The demos are served live by GitHub Pages straight from `main`, so they must work unbuilt.
+After any engine change: open every demo deck, step through them with the harness, run `tools/check-deck.js` and
+`python tools/themes.py --check`, and keep `README.md` in sync. The demos are served live by GitHub Pages straight
+from `main`, so they must work unbuilt.
 
 ## Contributing (pull requests welcome)
 
-New transitions, element effects, controls, fixes and docs are all welcome as pull requests. A good PR:
+New themes, transitions, element effects, controls, fixes and docs are all welcome as pull requests. **A PR can hold
+any number of changes**: a new theme together with the talk that shows it off, a few fixes found along the way, docs.
+Whatever belongs together. A good PR:
 
-- does one thing (one transition, one feature, one fix) and keeps the engine dependency-free;
-- updates `README.md` (tables / "Presenting"), the help table in `engine.js` if it adds a key, and
-  `demo/showcase/deck.html` so the new thing can be seen live;
-- was checked with `tools/test-harness.js` on both demo decks, and `tools/check-deck.js` still passes on them;
-- says in the description what it adds and how it was tested (browser and version).
+- keeps the engine dependency-free and puts new looks into a theme (`themes/<name>/`, see `themes/README.md`);
+- passes `python tools/themes.py --check` (it also runs automatically on every PR);
+- shows the new thing live: a demo deck in `demo/<Name>-demo/` (paths to `../../`) and/or slides in
+  `demo/showcase/deck.html`;
+- updates the docs it touches (`README.md`, a theme's README, the help table in `engine.js` if it adds a key);
+- was stepped through with `tools/test-harness.js` on the demo decks, and `tools/check-deck.js` passes on them;
+- says in the description what it adds and how it was tested (browser and version); the PR template asks for this.
 
 Only open a pull request when the user asks for it or agrees to it; it is published under their GitHub account.
 
 ## Repo conventions
 
 - MIT licensed. No build step for the engine itself, no npm, no frameworks.
+- Themes in `themes/<name>/` (theme.js, theme.json, README.md); demo decks in `demo/<Name>-demo/`, linking the engine
+  and themes at `../../`.
 - Don't commit built single-file decks (`*.html` outputs of `build.py` are tens of MB). `talks/` is git-ignored.
 - `HANDOVER.md`, if present, is the author's local session notes and is not part of the repo.

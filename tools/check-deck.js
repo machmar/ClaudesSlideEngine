@@ -14,7 +14,7 @@
     s.classList.add('se-on');
     const sr = s.getBoundingClientRect(), k = sr.width / W;
     s.querySelectorAll('*').forEach(el => {
-      if (el.closest('.se-ambient,.se-scanbar') || el.closest('svg') && el.tagName.toLowerCase() !== 'svg') return;
+      if (el.closest('.se-ambient,.se-scanbar,.se-helper') || el.closest('svg') && el.tagName.toLowerCase() !== 'svg') return;
       const r = el.getBoundingClientRect();
       if (!r.width || !r.height) return;
       const out = Math.max((sr.left - r.left) / k, (r.right - sr.right) / k, (sr.top - r.top) / k, (r.bottom - sr.bottom) / k);

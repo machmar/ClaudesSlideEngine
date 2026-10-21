@@ -1,0 +1,21 @@
+# Runs on every pull request and push to main: JavaScript syntax of the engine and every theme, then the theme
+# manifests and the catalogue in themes/README.md (python tools/themes.py --check).
+name: Check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: JavaScript syntax
+        run: for f in engine.js themes/*/theme.js tools/*.js; do node --check "$f" || exit 1; done
+      - name: Themes and catalogue
+        run: python3 tools/themes.py --check

@@ -3,10 +3,9 @@
 'use strict';
 const body = document.body;
 const W = +body.dataset.width || 1920, H = +body.dataset.height || 1080;
-const ACCENT = body.dataset.accent || '#ffc47d';
-const LED_BG = body.dataset.ledBg || '#0b130f';
+const ACCENT = body.dataset.accent || '#9fb3c8';      // neutral by default; a deck or theme sets its own
 const LANG = body.dataset.lang || 'en';
-const CYCLE = (body.dataset.transitions || 'led-radial,cube-y,iris,blinds,dissolve,led-rain,zoom,glitch,vortex,led-spiral')
+const CYCLE = (body.dataset.transitions || 'cube-y,iris,blinds,dissolve,zoom,vortex,cube-x,fade')
   .split(',').map(s => s.trim()).filter(Boolean);
 const ease = { io: 'cubic-bezier(.65,0,.35,1)', out: 'cubic-bezier(.16,1,.3,1)', in: 'cubic-bezier(.55,0,1,.45)' };
 const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
@@ -91,7 +90,7 @@ function fit() {
 }
 addEventListener('resize', fit); fit();
 
-/* ---------- glow sprite for LED effects ---------- */
+/* ---------- glow sprite in the accent colour (iris ring, themes' lights) ---------- */
 const sprite = (() => {
   const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
   const r = g.createRadialGradient(32, 32, 0, 32, 32, 32);
@@ -99,6 +98,13 @@ const sprite = (() => {
   r.addColorStop(.45, rgba(rgb, .35)); r.addColorStop(1, rgba(rgb, 0));
   g.fillStyle = r; g.fillRect(0, 0, 64, 64); return c;
 })();
+
+/* ---------- registries: the core fills them below, theme files (themes/<name>/theme.js) add to them ---------- */
+const T = {}, BUILDS = {}, AMBIENTS = {}, DOTSTYLES = {};
+function helper(cls, html, css) {           // an element the engine adds for an effect (never part of the deck's content)
+  const e = document.createElement('div'); e.className = 'se-helper ' + cls; if (html) e.innerHTML = html;
+  Object.assign(e.style, css || {}); return e;
+}
 
 /* ---------- element builds ---------- */
 function splitLetters(el) {
@@ -156,10 +162,11 @@ function plan(slide) {
   const items = [], covered = new Set();
   const inside = el => [...covered].some(c => c !== el && c.contains(el));
   for (const el of slide.querySelectorAll('h1,h2,h3,h4,p,li,img,video,svg,table,ol,ul,div,figure,blockquote,pre')) {
-    if (el.closest('.se-ambient,.se-scanbar') || el.closest('svg') !== null && el.tagName !== 'svg' && el.tagName !== 'SVG') continue;
+    if (el.closest('.se-ambient,.se-scanbar,.se-helper') || el.closest('svg') !== null && el.tagName !== 'svg' && el.tagName !== 'SVG') continue;
     const tag = el.tagName.toUpperCase(), forced = el.dataset.fx;
     if (forced === 'none') { covered.add(el); continue; }
-    if (inside(el) && !(forced === 'count')) {
+    const def = forced && BUILDS[forced];
+    if (inside(el) && !(forced === 'count' || def && def.nested)) {
       if (tag === 'P' && !forced) { const big = parseFloat(getComputedStyle(el).fontSize) >= 60 && !el.children.length; const info = big && countTargets(el); if (info) items.push({ el, kind: 'count', info, quiet: true }); }
       continue;
     }
@@ -168,6 +175,7 @@ function plan(slide) {
       if (forced === 'letters') splitLetters(el);
       items.push({ el, kind: forced }); covered.add(el);
       if (forced === 'rows') addCellCounts(el, items);
+      if (def && def.count && !el.children.length) { const info = countTargets(el); if (info) items.push({ el, kind: 'count', info, quiet: true }); }
       continue;
     }
     const cs = getComputedStyle(el);
@@ -199,6 +207,19 @@ function addCellCounts(table, items) {        // right-aligned number cells coun
 }
 
 const GLOW = rgba(rgb, .95);
+/* keyframes sampled from a motion function of time (ms), so that helpers can follow the same path exactly */
+const sampled = (T, fn, n = 40) => Array.from({ length: n + 1 }, (_, i) => Object.assign({ offset: i / n }, fn(T * i / n)));
+/* where an element sits on its slide (canvas px), measured before any build moves it; measure "text" adds the box of
+   the text itself (tx = right edge, ty, th), not of the (often full-width) element around it */
+function geoOf(el, measure) {
+  const slide = el.closest('.se-slide'), sr = slide.getBoundingClientRect(), k = sr.width / W, r = el.getBoundingClientRect();
+  const g = { slide, x: (r.left - sr.left) / k, y: (r.top - sr.top) / k, w: r.width / k, h: r.height / k };
+  if (measure === 'text') {
+    const rg = document.createRange(); rg.selectNodeContents(el); const tr = rg.getBoundingClientRect();
+    g.tx = (tr.right - sr.left) / k; g.ty = (tr.top - sr.top) / k; g.th = tr.height / k;
+  }
+  return g;
+}
 function makeBuild(item, delay, out) {
   const { el, kind } = item;
   const A = (target, k, o) => out.push(target.animate(k, Object.assign({ fill: 'both', delay }, o)));
@@ -265,17 +286,20 @@ function makeBuild(item, delay, out) {
       { clipPath: 'circle(150% at 50% 6%)', filter: 'none', transform: 'none' }], { duration: 2200, easing: ease.out }); break;
     case 'count': {
       const info = item.info; renderCount(el, info, 0);
+      if (el._se && el._se.countDelay != null) delay = el._se.countDelay;   // a theme effect can hold the count back
       let t0 = null;
       out.push({ raf: 0, cancel() { cancelAnimationFrame(this.raf); }, finish() { cancelAnimationFrame(this.raf); renderCount(el, info, 1); }, pause() {},
         play() { const go = now => { if (t0 === null) t0 = now + delay; const p = clamp((now - t0) / 1500); renderCount(el, info, 1 - Math.pow(1 - p, 4)); if (p < 1) this.raf = requestAnimationFrame(go); }; this.raf = requestAnimationFrame(go); } });
       break;
     }
+    default: { const def = BUILDS[kind]; if (def) def.make(item, { el, delay, out, A, geo: item.geo, slide: el.closest('.se-slide') }); }
   }
 }
 function prime(slide) {            // put a slide's elements in their "before" state, paused
   resetBuilds(slide);
   const anims = [], speed = simple ? .5 : 1;
   let k = 0;
+  plan(slide).forEach(it => { it.el._se = {}; const d = BUILDS[it.kind]; it.geo = d && d.measure ? geoOf(it.el, d.measure) : null; });
   plan(slide).forEach(it => { makeBuild(it, (it.kind === 'count' ? 250 + k * 60 : k * 140) * speed, anims); if (!it.quiet) k++; });
   anims.forEach(a => a.pause());
   slide._builds = anims;
@@ -284,36 +308,31 @@ const playBuilds = slide => (slide._builds || []).forEach(a => a.play());
 function resetBuilds(slide) {
   (slide._builds || []).forEach(a => a.cancel());
   slide._builds = null;
-  slide.querySelectorAll('.se-scanbar').forEach(b => b.remove());
-  (slide._plan || []).forEach(it => { if (it.kind === 'count') renderCount(it.el, it.info, 1); });
+  slide.querySelectorAll('.se-scanbar,.se-helper').forEach(b => b.remove());
+  (slide._plan || []).forEach(it => { if (it.kind === 'count') renderCount(it.el, it.info, 1); delete it.el._se; });
 }
 
-/* ---------- ambient LED matrix (data-ambient="leds") ---------- */
+/* ---------- ambient backgrounds: data-ambient="<name>" on a slide, all from themes ----------
+   AMBIENTS[name] = { init(slide, canvas) -> state, draw(g, state, t, dt, still) }; still = a frozen frame (overview). */
 const ambients = [];
-slides.forEach(s => {
-  if (s.dataset.ambient !== 'leds') return;
-  const c = document.createElement('canvas'); c.className = 'se-ambient'; c.width = W; c.height = H; c.style.width = W + 'px'; c.style.height = H + 'px'; s.prepend(c);
-  const dots = []; for (let y = 30; y < H; y += 44) for (let x = 30 + ((y / 44) % 2) * 22; x < W; x += 44) dots.push([x, y, Math.random() * 6.28]);
-  ambients.push({ s, g: c.getContext('2d'), dots });
-});
+function startAmbients() {          // after the themes have registered theirs
+  slides.forEach(s => {
+    const def = AMBIENTS[s.dataset.ambient]; if (!def) return;
+    const c = document.createElement('canvas'); c.className = 'se-ambient'; c.width = W; c.height = H; c.style.width = W + 'px'; c.style.height = H + 'px'; s.prepend(c);
+    ambients.push({ s, def, g: c.getContext('2d'), st: (def.init && def.init(s, c)) || {}, last: null });
+  });
+  if (ambients.length) requestAnimationFrame(ambientTick);
+}
 function ambientTick(now) {
   const t = now / 1000;
   for (const a of ambients) {
-    if (!a.s.classList.contains('se-on')) continue;
-    drawAmbient(a.g, a.dots, t);
+    if (!a.s.classList.contains('se-on')) { a.last = null; continue; }
+    const dt = a.last == null ? 0 : Math.min(.1, t - a.last); a.last = t;
+    a.def.draw(a.g, a.st, t, dt, false);
   }
   requestAnimationFrame(ambientTick);
 }
-function drawAmbient(g, dots, t) {
-  g.clearRect(0, 0, W, H);
-  for (const [x, y, ph] of dots) {
-    const wave = Math.sin(t * 1.3 - x / 260 - y / 340 + Math.sin(t * .4) * 2) * .5 + .5;
-    const tw = Math.pow(Math.sin(t * 2.1 + ph * 7) * .5 + .5, 18);
-    g.globalAlpha = .05 + wave * .1 + tw * .5; g.drawImage(sprite, x - 9, y - 9, 18, 18);
-  }
-  g.globalAlpha = 1;
-}
-if (ambients.length) requestAnimationFrame(ambientTick);
+const drawAmbient = (g, a, t, still) => a.def.draw(g, a.st, t, 0, !!still);
 
 /* ---------- transitions ---------- */
 function A(el, k, o) { const a = el.animate(k, Object.assign({ fill: 'both' }, o)); running.push(a); return a; }
@@ -337,40 +356,6 @@ function focusOf(target, fallbackSlide) {    // data-focus="x,y" on the incoming
 }
 const finished = a => a.finished.catch(() => {});
 
-const T = {};
-function ledWipe(kind) {
-  return async (from, to, dir, reveal) => {
-    const G = 40, cols = Math.ceil(W / G), rows = Math.ceil(H / G), cells = [];
-    const focus = kind === 'radial' ? focusOf(to, from) : [W / 2, H / 2];
-    const diag = Math.hypot(W, H);
-    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
-      const x = c * G + G / 2, y = r * G + G / 2, dx = x - focus[0], dy = y - focus[1];
-      let d;
-      if (kind === 'radial') d = Math.hypot(dx, dy) / diag;
-      else if (kind === 'rain') d = (y / H) * .55 + ((c * 7919) % 97) / 97 * .45;
-      else if (kind === 'spiral') d = (Math.hypot(dx, dy) / diag) * .55 + ((Math.atan2(dy, dx) + Math.PI) / (2 * Math.PI)) * .45;
-      else d = (x / W) * .7 + (y / H) * .3;
-      cells.push({ x, y, d: dir < 0 ? 1 - d : d, n: Math.random() });
-    }
-    layer(from, 2);
-    const band = .22; let swapped = false;
-    await rafLoop(simple ? 700 : 1900, p => {
-      fctx.clearRect(0, 0, W, H);
-      const first = p < .5, q = first ? p / .5 : (p - .5) / .5;
-      if (!first && !swapped) { swapped = true; from.classList.remove('se-on'); layer(to, 2); reveal(); }
-      for (const cl of cells) {
-        const on = sstep(clamp((q * (1 + band) - cl.d) / band));
-        const cover = first ? on : 1 - sstep(clamp((q * (1 + band) - (1 - cl.d)) / band));
-        const glow = first ? Math.sin(on * Math.PI) * .9 + on * .35 : cover * .35 + Math.sin(cover * Math.PI) * .9;
-        if (cover > .002) { fctx.globalAlpha = cover; fctx.fillStyle = LED_BG; fctx.fillRect(cl.x - G / 2, cl.y - G / 2, G, G); }
-        if (glow > .01) { fctx.globalAlpha = clamp(glow * (.75 + cl.n * .25)); fctx.drawImage(sprite, cl.x - G * .8, cl.y - G * .8, G * 1.6, G * 1.6); }
-      }
-      fctx.globalAlpha = 1;
-    });
-    fctx.clearRect(0, 0, W, H);
-  };
-}
-T['led-radial'] = ledWipe('radial'); T['led-rain'] = ledWipe('rain'); T['led-spiral'] = ledWipe('spiral'); T['led-diagonal'] = ledWipe('diagonal');
 
 function cube(axis) {
   return async (from, to, dir, reveal) => {
@@ -481,14 +466,50 @@ T.fade = async (from, to, dir, reveal) => {
 };
 T.none = async (from, to, dir, reveal) => { layer(to, 2); reveal(); };
 
+/* ---------- themes ----------
+   A theme file (themes/<name>/theme.js, linked BEFORE engine.js) pushes { name, setup(se) } onto
+   window.slideEngineThemes. setup() gets the API below and registers its transitions, element effects, ambients and
+   dot styles. Names are global, so a deck can link several themes and mix their effects with the core ones.
+   themes/README.md documents the API and lists every theme. */
+const CORE_FX = ['letters', 'rise', 'fade', 'pop', 'flip', 'rows', 'list', 'power', 'tilt', 'spin3d', 'scan', 'radial', 'count', 'none'];
+const THEMES = [];
+const themeAPI = {
+  W, H, body, stage, fx, fctx, sprite, ACCENT, rgb, ease,
+  get simple() { return simple; },                       // M key: plain, short transitions
+  clamp, sstep, rgba, mix, A, layer, rafLoop, finished, focusOf, centerOf, helper, sampled, splitLetters, countTargets,
+  css(text) { const st = document.createElement('style'); st.textContent = text; document.head.appendChild(st); },
+  transition(name, fn) { T[name] = fn; },
+  build(name, def) { BUILDS[name] = typeof def === 'function' ? { make: def } : def; },
+  ambient(name, def) { AMBIENTS[name] = def; },
+  dots(name, def) { DOTSTYLES[name] = def; }
+};
+(window.slideEngineThemes || []).forEach(th => {
+  try { th.setup(themeAPI); THEMES.push(th.name); } catch (e) { console.error(`slide-engine: theme "${th && th.name}" failed`, e); }
+});
+window.slideEngineThemes = { push: th => console.warn(`slide-engine: theme "${th && th.name}" was loaded after engine.js and is ignored; link themes before the engine`) };
+startAmbients();
+{                                   // name a missing theme instead of failing quietly
+  const miss = new Map(), note = (what, i) => { if (!miss.has(what)) miss.set(what, new Set()); miss.get(what).add(i + 1); };
+  slides.forEach((s, i) => {
+    if (s.dataset.enter && !T[s.dataset.enter]) note(`data-enter="${s.dataset.enter}"`, i);
+    if (s.dataset.ambient && !AMBIENTS[s.dataset.ambient]) note(`data-ambient="${s.dataset.ambient}"`, i);
+    s.querySelectorAll('[data-fx]').forEach(el => { const f = el.dataset.fx; if (!CORE_FX.includes(f) && !BUILDS[f]) note(`data-fx="${f}"`, i); });
+  });
+  const d = body.dataset.dots; if (d && d !== 'on' && d !== 'off' && !DOTSTYLES[d]) miss.set(`data-dots="${d}"`, new Set());
+  miss.forEach((at, what) => console.warn(`slide-engine: unknown ${what}${at.size ? ' (slide ' + [...at].join(', ') + ')' : ''}. Is its theme linked before engine.js? See themes/README.md`));
+}
+
 /* the transition INTO each slide: its data-enter, else the next one from the cycle */
 slides.forEach((s, i) => { if (!s.dataset.enter || !T[s.dataset.enter]) { s.dataset.enterAuto = ''; s.dataset.enter = CYCLE[(i - 1 + CYCLE.length) % CYCLE.length] || 'fade'; } });
 
 /* ---------- navigation ---------- */
 slides.forEach(() => dotsEl.appendChild(document.createElement('i')));
+const dotStyle = DOTSTYLES[body.dataset.dots];      // data-dots="<name>" from a theme restyles the progress dots
+if (dotStyle && dotStyle.init) dotStyle.init(dotsEl, slides.length);
 const seen = new Set();
 function chrome() {
-  [...dotsEl.children].forEach((d, i) => { d.classList.toggle('cur', i === cur); d.classList.toggle('seen', seen.has(i)); });
+  dotsEl.querySelectorAll('i').forEach((d, i) => { d.classList.toggle('cur', i === cur); d.classList.toggle('seen', seen.has(i)); });
+  if (dotStyle && dotStyle.update) dotStyle.update(cur, dotsEl);
   notesEl.textContent = NOTES[cur] || '';
   if (!settling) history.replaceState(history.state, '', '#' + (cur + 1));
 }
@@ -508,7 +529,7 @@ async function go(n, forceDir) {
   const from = slides[cur], to = slides[n], dir = forceDir || (n > cur ? 1 : -1);
   const name = simple ? 'fade' : (dir > 0 ? to : from).dataset.enter;
   to.classList.add('se-on'); to.style.zIndex = 0;        // laid out for measuring, but underneath
-  prime(to); media(to, true);
+  swapped(from, to, dir); prime(to); media(to, true);
   let revealed = false; const reveal = () => { if (!revealed) { revealed = true; playBuilds(to); } };
   try { await (T[name] || T.fade)(from, to, dir, reveal); } catch (e) { console.error(e); }
   reveal();
@@ -532,8 +553,14 @@ function startTimer() {
 }
 function resetTimer() { clearInterval(timerIv); timerStart = null; timerEl.classList.remove('run'); timerEl.textContent = '0:00'; }
 
-const next = () => ovState ? closeOverview(ovSel) : go((queued ?? cur) + 1);
-const prev = () => ovState ? closeOverview(ovFrom) : go((queued ?? cur) - 1);
+/* In-slide steps: before leaving the current slide, every next/back input (keys, click, clicker, mouse side buttons,
+   browser history, swipe; not the overview) is offered to the slide as a cancelable `se:step` event, detail.dir = 1 / -1.
+   A slide that steps through its own content calls preventDefault() and stays. `se:enter` / `se:leave` (detail.dir)
+   fire on a slide when it becomes / stops being the current one, so it can reset its steps. */
+const stepHere = d => !busy && queued === null && !slides[cur].dispatchEvent(new CustomEvent('se:step', { detail: { dir: d }, cancelable: true }));
+const swapped = (from, to, dir) => { from.dispatchEvent(new CustomEvent('se:leave', { detail: { dir } })); to.dispatchEvent(new CustomEvent('se:enter', { detail: { dir } })); };
+const next = () => ovState ? closeOverview(ovSel) : stepHere(1) || go((queued ?? cur) + 1);
+const prev = () => ovState ? closeOverview(ovFrom) : stepHere(-1) || go((queued ?? cur) - 1);
 
 /* ---------- overview: a grid of all slides ----------
    The scroll wheel (or G) zooms out of the current slide into a grid of all slides; scrolling moves the highlight,
@@ -556,10 +583,10 @@ function buildOverview() {
     Object.assign(th.style, { left: th._x + 'px', top: th._y + 'px', width: OV.w + 'px', height: OV.h + 'px' });
     const k = s.cloneNode(true);          // a static copy of the slide in its finished state
     k.removeAttribute('id'); k.querySelectorAll('[id]').forEach(e => e.removeAttribute('id'));
-    k.querySelectorAll('.se-scanbar').forEach(e => e.remove());
+    k.querySelectorAll('.se-scanbar,.se-helper').forEach(e => e.remove());
     k.querySelectorAll('video').forEach(v => { const img = document.createElement('img'); img.src = v.poster; img.setAttribute('style', v.getAttribute('style') || ''); v.replaceWith(img); });
     const amb = ambients.find(a => a.s === s), ac = k.querySelector('canvas.se-ambient');
-    if (amb && ac) drawAmbient(ac.getContext('2d'), amb.dots, 3);
+    if (amb && ac) drawAmbient(ac.getContext('2d'), amb, 3, true);
     k.classList.add('se-on'); k.style.zIndex = ''; k.style.transform = `scale(${OV.w / W})`; k.style.transformOrigin = '0 0';
     k.inert = true;
     const num = document.createElement('b'); num.className = 'se-num'; num.textContent = i + 1;
@@ -620,6 +647,7 @@ async function closeOverview(n) {
   if (n !== cur) {
     startTimer();
     const from = slides[cur], to = slides[n];
+    swapped(from, to, n > cur ? 1 : -1);
     from.classList.remove('se-on'); media(from, false); resetBuilds(from); from.style.zIndex = '';
     to.classList.add('se-on'); to.style.zIndex = 2; media(to, true);
     seen.add(cur); cur = n; chrome();
@@ -655,7 +683,8 @@ addEventListener('contextmenu', e => e.preventDefault());     // no browser menu
 addEventListener('click', e => {
   if (helpEl.classList.contains('show')) { helpEl.classList.remove('show'); return; }
   if (ovState) { const th = e.target.closest('.se-th'); if (ovState === 1) closeOverview(th ? +th.dataset.i : ovFrom); return; }
-  if (e.target.closest('a,button,#se-notes,video[controls]')) return; (e.clientX < innerWidth * .2 ? prev : next)();
+  if (e.target.closest('a,button,#se-notes,video[controls]') || slides[cur].dataset.click === 'off') return;   // data-click="off": the mouse is for the slide's content
+  (e.clientX < innerWidth * .2 ? prev : next)();
 });
 /* Mouse back/forward buttons. Depending on the mouse driver they reach the page as mouse buttons 3/4, as the
    BrowserBack/BrowserForward keys, or only as the browser's own history navigation. All three are handled: the page
@@ -710,8 +739,9 @@ cur = clamp((parseInt(location.hash.slice(1), 10) || 1) - 1, 0, slides.length - 
 (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => {
   const s = slides[cur]; if (!s) return;
   s.classList.add('se-on'); s.style.zIndex = 2;
+  s.dispatchEvent(new CustomEvent('se:enter', { detail: { dir: 1 } }));
   prime(s); media(s, true); chrome();
   setTimeout(() => playBuilds(s), 300);
 });
-window.slideEngine = { go, next, prev, overview: () => ovState ? prev() : openOverview(), get current() { return cur; }, slides, notes: NOTES, transitions: Object.keys(T) };
+window.slideEngine = { go, next, prev, overview: () => ovState ? prev() : openOverview(), get current() { return cur; }, slides, notes: NOTES, themes: THEMES, transitions: Object.keys(T) };
 })();

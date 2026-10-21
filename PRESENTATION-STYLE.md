@@ -28,7 +28,9 @@ rounds of changes. Workflow: `CLAUDE.md`; technical reference: `README.md`; work
   (the title slide may have one bigger title, ~128 px).
 - **Not too dense, not empty**: 3–4 short points or one table/diagram per slide.
 - Light, warm background for content slides (`#F5F0E6`, dark text `#16271F`), dark slides only for title and
-  closing (`#13221B` + `data-ambient="leds"`), one accent-coloured statement slide (e.g. prices on `#FFC47D`).
+  closing (`#13221B` + an ambient background from a theme, e.g. `data-ambient="leds"` from pixelpine), one
+  accent-coloured statement slide (e.g. prices on `#FFC47D`).
+- Pick themes that fit the project (`themes/README.md`); several at once is fine. With no theme the core look is neutral.
 - Fonts: Fredoka for headings, Nunito Sans for text (or a pair that fits the project).
 - Accent colour = the project's own colour if it has one (`data-accent`).
 

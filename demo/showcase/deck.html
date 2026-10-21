@@ -7,6 +7,7 @@
 <!-- Showcase of the engine. Single-file build: python ../../build.py deck.html -o showcase.html -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400..700&family=Nunito+Sans:wght@400;600;700&display=swap">
 <link rel="stylesheet" href="../../engine.css">
+<script src="../../themes/pixelpine/theme.js" defer></script>
 <script src="../../engine.js" defer></script>
 <style>
   /* deck-wide look: plain CSS, nothing engine-specific */
@@ -50,7 +51,7 @@
       <li>Two files to link, no install</li>
       <li>Everything else is automatic</li>
     </ul>
-    <p class="label">Came in with led-radial</p>
+    <p class="label">Came in with led-radial (pixelpine theme)</p>
   </div>
   <pre>&lt;section <b>data-enter="cube-y"</b>&gt;
   &lt;h2&gt;Second slide&lt;/h2&gt;
@@ -110,20 +111,43 @@
   <div style="display:flex;flex-direction:column;gap:32px;flex:1">
     <h2>Video clips</h2>
     <p>An image with <b>data-video</b> becomes a muted loop that plays only while its slide is shown.</p>
-    <p class="label">Came in with led-rain.</p>
+    <p class="label">Came in with led-rain (pixelpine theme).</p>
   </div>
   <aside>The picture is the poster frame, so the slide looks right even before the clip loads.</aside>
 </section>
 
 <section data-enter="zoom">
   <h2>Every slide picks its entrance</h2>
+  <p class="label">Core, always there:</p>
   <div class="chips">
-    <div class="chip">led-radial</div><div class="chip">led-rain</div><div class="chip">led-spiral</div><div class="chip">led-diagonal</div>
     <div class="chip">cube-y</div><div class="chip">cube-x</div><div class="chip">iris</div><div class="chip">blinds</div>
     <div class="chip">dissolve</div><div class="chip">zoom</div><div class="chip">vortex</div><div class="chip">fade</div>
   </div>
-  <p class="label">data-enter="name" on the section. Going back plays it in reverse. Came in with zoom.</p>
+  <p class="label">From the pixelpine theme:</p>
+  <div class="chips">
+    <div class="chip">led-radial</div><div class="chip">led-rain</div><div class="chip">led-spiral</div><div class="chip">led-diagonal</div>
+  </div>
+  <p class="label">data-enter="name" on the section; going back plays it in reverse. Came in with zoom.</p>
   <aside>Slides without data-enter take the next transition from a cycle. Going back plays the leaving slide's transition in reverse.</aside>
+</section>
+
+<section data-enter="iris" style="flex-direction:row;align-items:center;gap:80px">
+  <div style="display:flex;flex-direction:column;gap:40px;flex:1">
+    <h2>Themes add more, and mix</h2>
+    <ul>
+      <li>The core is neutral</li>
+      <li>A theme adds transitions, effects and backgrounds</li>
+      <li>Link any number of themes in one deck</li>
+    </ul>
+    <p class="label">All themes: themes/README.md. Came in with iris.</p>
+  </div>
+  <pre>&lt;script src="themes/pixelpine/theme.js" defer&gt;
+&lt;script src="themes/train/theme.js" defer&gt;
+&lt;script src="engine.js" defer&gt;
+
+&lt;section <b>data-enter="led-rain"</b>&gt;
+&lt;section <b>data-enter="cube-y"</b>&gt;</pre>
+  <aside>Every name is unique across the core and all themes, so one deck can use the LED wipes of one theme and the cards of another. Themes are linked before the engine. New themes are welcome as pull requests.</aside>
 </section>
 
 <section class="accent" data-enter="vortex">
@@ -157,14 +181,14 @@
     <li>Claude writes the slides and notes, following CLAUDE.md</li>
     <li>build.py packs everything into one HTML file</li>
   </ul>
-  <p class="label">Came in with led-diagonal.</p>
+  <p class="label">Came in with led-diagonal (pixelpine theme).</p>
   <aside>The repository's CLAUDE.md tells Claude how to plan, write, check and build a deck, so you only review the result.</aside>
 </section>
 
 <section class="dark" data-enter="led-spiral" data-ambient="leds" style="justify-content:center">
   <h1>One file, any PC</h1>
   <p style="color:#e4ddcf">python build.py deck.html -o talk.html</p>
-  <p class="label" style="color:#cfc7b6">Came in with led-spiral. Scroll for the overview of all slides.</p>
+  <p class="label" style="color:#cfc7b6">Came in with led-spiral, LED matrix behind: both from the pixelpine theme. Scroll for the overview.</p>
   <aside>The built file has the engine, the pictures and the clips inside, so it can go on a USB stick and open in any current browser.</aside>
 </section>
 
